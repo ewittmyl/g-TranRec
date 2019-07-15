@@ -1,0 +1,6 @@
+0: other
+1: flare star
+2: variable star
+3: galaxy
+4: supernova
+5: star or point source
