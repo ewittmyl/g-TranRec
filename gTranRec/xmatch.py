@@ -122,7 +122,6 @@ def mp_check(filename, science_image, sep=20):
     cand_list = cand_list_operation(filename, mode='load')
 
     # image_search with MPChecker
-    mpc = pympc.Checker()   
     mpc.image_search(science_image, imagetype='IMAGE')
     mp_col = ['RA_deg','Dec_deg']
 
@@ -152,7 +151,9 @@ def mp_check(filename, science_image, sep=20):
         # empty mp table on the FoV of science image
         mp_table = pd.DataFrame(np.nan, index=np.arange(cand_list.shape[0]), columns=mp_col+['mp_offset'])
         mtab = cand_list.join(mp_table['mp_offset'])
-
+    
+    del mpc
+    del mp_table
     cand_list_operation(filename, det_tab=mtab, mode='update')
 
 def classification(obj_type):
