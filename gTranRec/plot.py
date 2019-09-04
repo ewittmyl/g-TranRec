@@ -12,7 +12,7 @@ import os
 def generate_report(image, img_types=['SCIENCE','TEMPLATE','DIFFERENCE']):
         cand_list = pd.DataFrame(np.array(getdata(image, 'CANDIDATES_LIST')).byteswap().newbyteorder())
         cand_list = cand_list.sort_values(by='real_bogus', ascending=False)
-        cand_list = round(cand_list,3)
+        cand_list = round(cand_list,5)
         cand_list = cand_list.replace(np.nan, "--", regex=True)
         pix_val = []
         pix_val.append(getdata(image, img_types[0]))
@@ -25,6 +25,8 @@ def generate_report(image, img_types=['SCIENCE','TEMPLATE','DIFFERENCE']):
                 col += ['NED_obj']
         if 'GLADE_offset' in cand_list.columns:
                 col += ['GLADE_offset']
+        if 'GLADE_dist' in cand_list.columns:
+                col += ['GLADE_dist']
 
         coords = cand_list[col]
         interval = ZScaleInterval()
@@ -50,19 +52,19 @@ def generate_report(image, img_types=['SCIENCE','TEMPLATE','DIFFERENCE']):
                                 plt.title("Science m: {}\nDelta m: {}\nDiff m: {}".format(coord[1]['mag_sci'],coord[1]['del_mag'],coord[1]['mag_diff']), loc='left', fontsize=10)
                         if i == 2:
                                 if ('mp_offset' in coords.columns) & ('NED_obj' in coords.columns) & ('GLADE_offset' in coords.columns):
-                                        plt.title("Minor Planet: {}\nNED Object: {}\nGLADE: {}".format(coord[1]['mp_offset'], coord[1]['NED_obj'], coord[1]['GLADE_offset']), loc='left', fontsize=10)
+                                        plt.title("Minor Planet: {}\nNED Object: {}\nGLADE: {}'', {}Mpc".format(coord[1]['mp_offset'], coord[1]['NED_obj'], coord[1]['GLADE_offset'], coord[1]['GLADE_dist']), loc='left', fontsize=10)
                                 elif ('mp_offset' in coords.columns) & ('NED_obj' in coords.columns):
                                         plt.title("Minor Planet: {}\nNED Object: {}".format(coord[1]['mp_offset'], coord[1]['NED_obj']), loc='left', fontsize=10)
                                 elif ('NED_obj' in coords.columns) & ('GLADE_offset' in coords.columns):
-                                        plt.title("NED Object: {}\nGLADE: {}".format(coord[1]['NED_obj'], coord[1]['GLADE_offset']), loc='left', fontsize=10)
+                                        plt.title("NED Object: {}\nGLADE: {}'', {}Mpc".format(coord[1]['NED_obj'], coord[1]['GLADE_offset'], coord[1]['GLADE_dist']), loc='left', fontsize=10)
                                 elif ('mp_offset' in coords.columns) & ('GLADE_offset' in coords.columns):
-                                        plt.title("Minor Planet: {}\nGLADE: {}".format(coord[1]['mp_offset'], coord[1]['GLADE_offset']), loc='left', fontsize=10)
+                                        plt.title("Minor Planet: {}\nGLADE: {}'', {}Mpc".format(coord[1]['mp_offset'], coord[1]['GLADE_offset'], coord[1]['GLADE_dist']), loc='left', fontsize=10)
                                 elif 'mp_offset' in coords.columns:
                                         plt.title("Minor Planet: {}".format(coord[1]['mp_offset']), loc='left', fontsize=10)
                                 elif 'NED_obj' in coords.columns:
                                         plt.title("NED Object: {}".format(coord[1]['NED_obj']), loc='left', fontsize=10)
                                 elif 'GLADE_offset' in coords.columns:
-                                        plt.title("GLADE: {}".format(coord[1]['GLADE_offset']), loc='left', fontsize=10)
+                                        plt.title("GLADE: {}'', {}Mpc".format(coord[1]['GLADE_offset'], coord[1]['GLADE_dist']), loc='left', fontsize=10)
                                 else:
                                         continue                
                 image_name = image.split("_")[1]+image.split("_")[2].split("-")[0] + '_' + str(j) + '.png'

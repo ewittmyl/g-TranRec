@@ -86,6 +86,7 @@ class classifier():
                 # clean data with inf or NaN
                 det_tab = det_tab.replace([np.inf, -np.inf], np.nan)
                 det_tab.dropna(inplace=True)
+                det_tab.reset_index(drop=True, inplace=True)
 
                 # load image
                 pix_val = getdata(filename, extname['image'])
@@ -98,6 +99,12 @@ class classifier():
 
                 # scale detection stamps
                 X = scaling(stamps)
+                X.replace([np.inf, -np.inf], np.nan, inplace=True)
+                X.dropna(inplace=True)
+                det_tab = det_tab.loc[X.index.tolist()]
+
+                if self.algorithm == 'Convolutional_Neural_Network':
+                        X = X.values.reshape(-1,21,21,1)
 
                 if self.algorithm == 'PCA_Random_Forest':
                         X = self.pca.transform(X)
