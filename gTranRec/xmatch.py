@@ -207,17 +207,20 @@ def xmatch_ned(ra, dec, r=3):
     radius = u.Quantity(r, u.arcsec)
 
     # cross-match using astroquery
-    tab = Ned.query_region(coord, radius)
     try:
-        # pick the closest one within the search cone
-        tab.sort('Separation')
-        obj_type = [str(d['Type'])[2:-1] for d in tab]
+        tab = Ned.query_region(coord, radius)
+        try:
+            # pick the closest one within the search cone
+            tab.sort('Separation')
+            obj_type = [str(d['Type'])[2:-1] for d in tab]
 
-        # return the object class
-        return classification(obj_type[0])
+            # return the object class
+            return classification(obj_type[0])
+        except:
+            # return NaN if no object within the search cone
+            return np.nan
     except:
-        # return NaN if no object within the search cone
-        return np.nan
+        print("Error occurs during NED query!")
 
 def read_glade():
     """

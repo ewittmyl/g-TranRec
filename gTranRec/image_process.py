@@ -120,15 +120,16 @@ def image_subtract(science, aligned_template):
                 filename of the difference image
         """
         print("Running {} - {}".format(science, aligned_template))
-        HP_PATH = getattr(config, 'HP_PATH')
+        # HP_PATH = getattr(config, 'HP_PATH')
         output = '_'.join(['diff', science])
-        if os.path.isfile(HP_PATH):
-                hpcmd = HP_PATH + ' -inim ' + science + '[0] -tmplim ' + aligned_template + ' -outim ' + output + ' -tu 55000 -iu 55000 -tl 10 -il 10 -tg 1.3 -ig 1.3 -tr 10 -ir 10 -nrx 2 -nry 2 -fi 0 -n i -ko 2 -sconv -bgo 2 -v 0 -ng 3 6 1.428 4 2.855 2 5.710 -r 19.985 -rss 25.985'
+        # if os.path.isfile(HP_PATH):
+        try:
+                hpcmd = 'hotpants -inim ' + science + '[0] -tmplim ' + aligned_template + ' -outim ' + output + ' -tu 55000 -iu 55000 -tl 10 -il 10 -tg 1.3 -ig 1.3 -tr 10 -ir 10 -nrx 2 -nry 2 -fi 0 -n i -ko 2 -sconv -bgo 2 -v 0 -ng 3 6 1.428 4 2.855 2 5.710 -r 19.985 -rss 25.985'
                 os.system(hpcmd)
                 return output
-        else:
+        except:
                 # return error if no hotpants is found
-                raise FileNotFoundError('No HOTPANTS is found!') 
+                raise FileNotFoundError('Error occurs when running HOTPANTS!') 
 
 def image_extract(filename, image_type='IMAGE'):
         """
