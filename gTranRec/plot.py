@@ -39,7 +39,12 @@ def generate_report(image, img_types=['SCIENCE','TEMPLATE','DIFFERENCE']):
                         img = win[0].reshape(150,150)
                         ax = plt.subplot(1, 3, i+1)
                         ax.imshow(img, cmap="gray")
-                        ax.set_xticks([])
+                        if i == 0:
+                                ax.set_xticks([0,16.1])
+                                ax.set_xticklabels(['','20"'])
+                        else:
+                                ax.set_xticks([])
+                                ax.set_xticklabels([])
                         ax.set_yticks([])
                         ax.axhline(75, xmin=0.4, xmax=0.45,color='red', linewidth=2)
                         ax.axhline(75, xmin=0.55, xmax=0.6,color='red', linewidth=2)
