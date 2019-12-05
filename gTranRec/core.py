@@ -75,6 +75,28 @@ def score_filter(filename, cutoff_score=0.5):
     # update the CANDIDATES_LIST from difference image
     cand_list_operation(filename, det_tab=det_tab, mode='update')
 
+def ws_filter(filename, cutoff_score=0.5):
+    """
+    Filtering detections below score threshold.
+
+    Parameters:
+    ----------
+    filename: str
+        filename of the difference image
+    cutoff_score: float
+        decision boundary of the real-bogus score
+    """
+    # load the CANDIDATES_LIST from difference image
+    det_tab = cand_list_operation(filename, mode='load')
+
+    print("Filtering detections with score below {}".format(cutoff_score))
+    mask = det_tab['w_real_bogus'] >= cutoff_score
+    det_tab = det_tab[mask]
+
+    # update the CANDIDATES_LIST from difference image
+    cand_list_operation(filename, det_tab=det_tab, mode='update')
+
+
 def flags_filter(filename):
     """
     Filtering detections with FLAGS.
@@ -119,7 +141,7 @@ def calc_mag(filename, science):
     # update the CANDIDATES_LIST from difference image
     cand_list_operation(filename, det_tab=det_tab, mode='update')
 
-def artifacts_filter(filename):
+def artifacts_weight(filename, w=0.2):
     """
     Filtering artifacts.
 
@@ -133,13 +155,14 @@ def artifacts_filter(filename):
 
     # filtering detections look like artifacts on science
     print("Filtering artifacts...")
-    mask = det_tab['ERRCXYWIN_IMAGE_sci'] == 0
-    det_tab = det_tab[~mask]
+    mask = ( det_tab['ERRCXYWIN_IMAGE_sci'] == 0 ) | (det_tab['ERRCXYWIN_IMAGE'] > 100) | (det_tab['ERRCXYWIN_IMAGE'] < -100)
+    weight = [w if m==1 else 1 for m in mask]
+    det_tab['w_real_bogus'] = det_tab['w_real_bogus'] * weight
 
     # update the CANDIDATES_LIST from difference image
     cand_list_operation(filename, det_tab=det_tab, mode='update')
 
-def on_science_filter(filename):
+def onsci_weight(filename, w=0.2):
     """
     Filtering detections on difference image which cannot be found on 
     the science image.
@@ -152,9 +175,10 @@ def on_science_filter(filename):
     # load the CANDIDATES_LIST from difference image
     det_tab = cand_list_operation(filename, mode='load')
 
-    print("Filtering off-science detections...")
+    print("Weighting off-science detections...")
     mask = det_tab['mag_sci'].isnull()
-    det_tab = det_tab[~mask]
+    weight = [w if m==1 else 1 for m in mask]
+    det_tab['w_real_bogus'] = det_tab['real_bogus'] * weight
 
     # update the CANDIDATES_LIST from difference image
     cand_list_operation(filename, det_tab=det_tab, mode='update')
@@ -293,7 +317,7 @@ def merge_images(difference, science, template):
         hdul0[4].header['EXTNAME'] = 'TEMPLATE'
         hdul0.flush()
 
-def main(science, template=None, det_thresh='1.5', algorithm='rf', cutoff_score=0.5, on_science=True, xmatch=['mp','ned','glade'], filter_known=['mp','ned'], glade_cat=None, near_galaxy=False, inspect=True):
+def main(science, template=None, det_thresh='1.5', algorithm='rf', cutoff_score=0.5, list_by='weighted', xmatch=['mp','ned','glade'], filter_known=['mp','ned'], glade_cat=None, near_galaxy=False, inspect=True):
 
     # start timer
     start = time.time()
@@ -349,12 +373,17 @@ def main(science, template=None, det_thresh='1.5', algorithm='rf', cutoff_score=
     # calculate del_mag and mag_diff
     calc_mag(difference, science)
 
-    if on_science:
-        # filter detections cannot be found on science image if True
-        on_science_filter(difference)
+    # filter detections cannot be found on science image if True
+    onsci_weight(difference)
 
     # filtering artifacts
-    artifacts_filter(difference)
+    artifacts_weight(difference)
+
+    if list_by == 'weighted':
+        ws_filter(difference, cutoff_score=cutoff_score)
+    elif list_by == 'normal':
+        pass
+
 
     if 'mp' in xmatch:
         try:
