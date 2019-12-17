@@ -1,1 +1,0 @@
-{'max_features': 5, 'min_samples_leaf': 1, 'train_acc': 1.0, 'train_acc_err': 0.0, 'val_acc': 0.9920953125, 'val_acc_err': 0.00013326210662637463}
