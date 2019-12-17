@@ -2,7 +2,7 @@ from astropy.io.fits import getdata, getheader
 from astropy.io import fits
 import numpy as np
 import pandas as pd
-import os
+import alipy, os
 
 
 def unzip(filename):
