@@ -136,7 +136,7 @@ class SExtractor():
         f.close()
 
         # create param file
-        params = ['X_IMAGE', 'Y_IMAGE', 'FLAGS', 'ERRCXYWIN_IMAGE', 'MAG_AUTO', 'MAGERR_AUTO', 'B_IMAGE', 'FLAGS_WIN', 'ELLIPTICITY']
+        params = ['X_IMAGE', 'Y_IMAGE', 'FLAGS', 'ERRCXYWIN_IMAGE', 'MAG_AUTO', 'MAGERR_AUTO', 'B_IMAGE', 'FLAGS_WIN', 'ELLIPTICITY', 'FWHM_IMAGE']
         f = open('.gtr.param', 'w')
         print('\n'.join(params), file=f)
         f.close()
@@ -172,7 +172,8 @@ class SExtractor():
         9. mag
         10. B_IMAGE
         11. FLAGS_WIN
-        12. ELLIPTICITY
+        12. ELLIPTICITYi
+        13. FWHM_IMAGE
 
         The following files would be generated:
         1. <filename_basename>_sex.fits
