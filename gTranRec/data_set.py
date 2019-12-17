@@ -8,7 +8,6 @@ import numpy as np
 from .features import fits2df
 from sklearn.utils import shuffle
 import pickle
-from .postprocess import make_Mag2Lim
 
 
 def PrepImages(image_list, label='both'):
@@ -55,26 +54,13 @@ def AddPCA():
             diff_f.make_PCA()
         except:
             pass
-
-def AddMag2Lim():
-    images = [img for img in os.listdir("./") if '.fits' in img]
-    for img in images:
-        try:
-            make_Mag2Lim(img, image_type='IMAGE')
-        except:
-            pass
-        
-        try:
-            make_Mag2Lim(img, image_type='DIFFERENCE')
-        except:
-            pass
         
 
 def create_df(outfile='all_data.csv'):
     images = [img for img in os.listdir(".") if ".fits" in img]
     # load trained PCA and KBest
     pca = pickle.load(open(getattr(config, 'pca_path'), 'rb'))
-    X_col = ['pca{}'.format(i) for i in range(1,pca.components_.shape[0]+1)] + ['b_image','nmask','n3sig7','gauss_amp','gauss_R','abs_pv','FLAGS','FLAGS_WIN','ERRCXYWIN_IMAGE', 'X_IMAGE', 'Y_IMAGE', 'y','mag2lim']
+    X_col = ['pca{}'.format(i) for i in range(1,pca.components_.shape[0]+1)] + ['b_image','nmask','n3sig7','gauss_amp','gauss_R','abs_pv','FLAGS','FLAGS_WIN','ERRCXYWIN_IMAGE', 'X_IMAGE', 'Y_IMAGE', 'y']
     df = pd.DataFrame(X_col)
     for img in images:
         try:

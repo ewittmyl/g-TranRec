@@ -37,13 +37,3 @@ def position_weighting(filename):
     weight = gauss_weight(filename, d2d)
     diff_df.GTR_score = weight * diff_df.GTR_score
     FitsOp(filename, extname="DIFFERENCE_DETAB", dataframe=diff_df, mode="update")
-
-def make_Mag2Lim(filename, image_type='DIFFERENCE'):
-    hdr = getheader(filename, 'IMAGE')
-    sci_photometry = fits2df(filename, "PHOTOMETRY")
-    maglim = np.max(hdr['CALAP']*sci_photometry['MAG_AUTO']+hdr['CALZP'])
-    extname = '{}_DETAB'.format(image_type)
-
-    sci_df = fits2df(filename, extname)
-    sci_df['mag2lim'] = maglim - sci_df.mag
-    FitsOp(filename, extname, sci_df, mode='update')
