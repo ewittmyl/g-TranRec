@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name = "g-TranRec",
-    version = "0.0.1",
+    version = "0.1.1",
     author = "Y.-L.Mong",
     author_email = "yik.mong@monash.edu",
     description = "GOTO transient searching",

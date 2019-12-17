@@ -1,11 +1,15 @@
-import os
 import pkg_resources
+import os
 
-HP_PATH = os.environ['HP_PATH']
 
-sex_cmd = 'sex'
-# sex_cmd = 'sextractor'
+sex_cmd = 'sextractor'
+# sex_cmd = 'sex'
 
-DATA_DIR = pkg_resources.resource_filename('gTranRec', 'data')
+user = 'travis'
+password = '19880830'
 
-GLADE_PATH = os.path.join(DATA_DIR, 'GLADE.txt')
+
+MODEL_DIR = pkg_resources.resource_filename('gTranRec', 'model')
+
+pca_path = os.path.join(MODEL_DIR, 'pca.m')
+rf_path = os.path.join(MODEL_DIR, 'rf.m')
