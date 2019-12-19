@@ -22,13 +22,13 @@ def gauss_weight(filename, sep, n_sigma=1):
     """
 
     ang_resol = 1.24
-    sci_df = fits2df(filename, "PHOTOMETRY")
+    sci_df = fits2df(filename, "IMAGE_DETAB")
     sigma = sci_df['FWHM_IMAGE'].mean() * ang_resol
     w = np.exp(-(sep/(n_sigma*sigma)))
     return w
 
 def position_weighting(filename):
-    sci_df = fits2df(filename, "PHOTOMETRY")
+    sci_df = fits2df(filename, "IMAGE_DETAB")
     diff_df = fits2df(filename, "DIFFERENCE_DETAB")
     diff_coord = SkyCoord(ra=(diff_df['ra']*u.degree).values, dec=(diff_df['dec']*u.degree).values)
     sci_coord = SkyCoord(ra=(sci_df['ra']*u.degree).values, dec=(sci_df['dec']*u.degree).values)

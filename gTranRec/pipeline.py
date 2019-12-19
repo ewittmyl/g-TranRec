@@ -13,7 +13,8 @@ def main(science, template=None, xmatch_thresh=0.5, glade=None):
     unzip(science)
 
     if not template:
-        SExtractor(science, image_ext='DIFFERENCE').run()
+        SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
+        SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         diff_features = FeatureExtract(science, 'DIFFERENCE')
         diff_features.make_X()
         diff_features.make_PCA()
@@ -25,7 +26,8 @@ def main(science, template=None, xmatch_thresh=0.5, glade=None):
     else:
         template = template_align(science, template)
         image_subtract(science, template)
-        SExtractor(science, image_ext='DIFFERENCE').run()
+        SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
+        SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         diff_features = FeatureExtract(science, 'DIFFERENCE')
         diff_features.make_X()
         diff_features.make_PCA()
