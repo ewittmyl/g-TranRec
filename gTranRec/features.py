@@ -187,7 +187,7 @@ class SExtractor():
         image_extract(self.filename, extname=self.extname)
 
         # create config files 
-        self.create_config(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
+        self.create_config(thresh=2, deblend_nthresh=deblend_nthresh, deblend_mincont=deblend_mincont)
         
         # create shell command
         self.create_cmd()
