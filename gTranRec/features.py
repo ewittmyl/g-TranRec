@@ -218,10 +218,10 @@ class SExtractor():
         final_det_tab['mag'] = hdr['CALAP']*final_det_tab['MAG_AUTO']+hdr['CALZP']
 
         # add extension table to input FITS
-        FitsOp(self.filename, '_'.join([self.extname, 'DETAB']), final_det_tab, mode='append')
+        # FitsOp(self.filename, '_'.join([self.extname, 'DETAB']), final_det_tab, mode='append')
         
         # for testing the optimal thresh and minarea
-        # FitsOp(self.filename.split(".")[0]+'_sex.fits', '_'.join([self.extname, 'DETAB']), final_det_tab, mode='write')
+        FitsOp(self.filename.split(".")[0]+'_sex.fits', '_'.join([self.extname, 'DETAB']), final_det_tab, mode='write')
 
         # remove intermediate file
         cmd = ' '.join(['rm', '-rf', intermediate_fn])
