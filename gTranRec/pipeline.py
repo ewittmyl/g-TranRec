@@ -3,9 +3,10 @@ from .image_process import unzip, template_align, image_subtract
 from .features import SExtractor, FeatureExtract
 from .model import CalcGTR
 from .postprocess import position_weighting
+from .plot import generate_report
 
 
-def main(science, template=None, xmatch_thresh=0.5, glade=None):
+def main(science, template=None, thresh=0.5, glade=None, report=False):
     # start timer
     start = time.time()
 
@@ -21,7 +22,9 @@ def main(science, template=None, xmatch_thresh=0.5, glade=None):
         CalcGTR(science, model='RF')
         position_weighting(science)
         if glade:
-            XmatchGLADE(science, glade, xmatch_thresh=xmatch_thresh)
+            XmatchGLADE(science, glade, xmatch_thresh=thresh)
+        if report:
+            generate_report(science, thresh=thresh)
 
     else:
         template = template_align(science, template)
@@ -35,6 +38,8 @@ def main(science, template=None, xmatch_thresh=0.5, glade=None):
         position_weighting(science)
         if glade:
             XmatchGLADE(science, glade, xmatch_thresh=xmatch_thresh)
+        if report:
+            generate_report(science, thresh=thresh)
 
     end = time.time()
     time_used = end - start
