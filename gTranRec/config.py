@@ -9,7 +9,8 @@ user = 'travis'
 password = '19880830'
 
 
-MODEL_DIR = pkg_resources.resource_filename('gTranRec', 'model')
+DATA_DIR = pkg_resources.resource_filename('gTranRec', 'data')
 
-pca_path = os.path.join(MODEL_DIR, 'pca.m')
-rf_path = os.path.join(MODEL_DIR, 'rf.m')
+pca_path = os.path.join(DATA_DIR, 'pca.m')
+rf_path = os.path.join(DATA_DIR, 'rf.m')
+glade_path = os.path.join(DATA_DIR, 'GLADE.txt')
