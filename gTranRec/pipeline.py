@@ -21,7 +21,7 @@ def main(science, template=None, thresh=0.5, glade=None, report=False):
         diff_features.make_PCA()
         CalcGTR(science, model='RF')
         position_weighting(science)
-        if instance(glade, pd.DataFrame):
+        if isinstance(glade, pd.DataFrame):
             XmatchGLADE(science, glade, xmatch_thresh=thresh)
         if report:
             generate_report(science, thresh=thresh)
@@ -36,7 +36,7 @@ def main(science, template=None, thresh=0.5, glade=None, report=False):
         diff_features.make_PCA()
         CalcGTR(science, model='RF')
         position_weighting(science)
-        if instance(glade, pd.DataFrame):
+        if isinstance(glade, pd.DataFrame):
             XmatchGLADE(science, glade, xmatch_thresh=xmatch_thresh)
         if report:
             generate_report(science, thresh=thresh)
