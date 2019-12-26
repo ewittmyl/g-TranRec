@@ -4,6 +4,7 @@ from .features import SExtractor, FeatureExtract
 from .model import CalcGTR
 from .postprocess import position_weighting
 from .plot import generate_report
+import pandas as pd
 
 
 def main(science, template=None, thresh=0.5, glade=None, report=False):
