@@ -24,7 +24,7 @@ def main(science, template=None, thresh=0.5, xmatch=True, glade=None, report=Fal
         CalcGTR(science, model='RF')
         position_weighting(science)
         if xmatch:
-            XmatchGLADE(science, glade, xmatch_thresh=thresh)
+            XmatchGLADE(science, glade, GTR_thresh=thresh)
         if report:
             generate_report(science, thresh=thresh)
 
@@ -39,7 +39,7 @@ def main(science, template=None, thresh=0.5, xmatch=True, glade=None, report=Fal
         CalcGTR(science, model='RF')
         position_weighting(science)
         if xmatch:
-            XmatchGLADE(science, glade, xmatch_thresh=xmatch_thresh)
+            XmatchGLADE(science, glade, GTR_thresh=xmatch_thresh)
         if report:
             generate_report(science, thresh=thresh)
 
