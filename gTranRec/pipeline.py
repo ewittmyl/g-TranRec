@@ -4,10 +4,11 @@ from .features import SExtractor, FeatureExtract
 from .model import CalcGTR
 from .postprocess import position_weighting
 from .plot import generate_report
+from .xmatch import XmatchGLADE
 import pandas as pd
 
 
-def main(science, template=None, thresh=0.5, glade=None, report=False):
+def main(science, template=None, thresh=0.5, xmatch=True, glade=None, report=False):
     # start timer
     start = time.time()
 
@@ -22,7 +23,7 @@ def main(science, template=None, thresh=0.5, glade=None, report=False):
         diff_features.make_PCA()
         CalcGTR(science, model='RF')
         position_weighting(science)
-        if isinstance(glade, pd.DataFrame):
+        if xmatch:
             XmatchGLADE(science, glade, xmatch_thresh=thresh)
         if report:
             generate_report(science, thresh=thresh)
@@ -37,7 +38,7 @@ def main(science, template=None, thresh=0.5, glade=None, report=False):
         diff_features.make_PCA()
         CalcGTR(science, model='RF')
         position_weighting(science)
-        if isinstance(glade, pd.DataFrame):
+        if xmatch:
             XmatchGLADE(science, glade, xmatch_thresh=xmatch_thresh)
         if report:
             generate_report(science, thresh=thresh)
