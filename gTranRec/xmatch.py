@@ -16,7 +16,7 @@ def read_glade():
         GLADE catalog
     """
     # load GLADE catalog
-    GLADE_PATH = getattr(config, 'GLADE_PATH')
+    GLADE_PATH = getattr(config, 'glade_path')
     col = ['PGC','GWGC name','HyperLEDA name',
             '2MASS name','SDSS-DR12 name','flag1',
             'RA','dec','dist','dist_err','z','B',
