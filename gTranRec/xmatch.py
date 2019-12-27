@@ -39,9 +39,9 @@ def XmatchGLADE(filename, glade_df, GTR_thresh=0.5):
     glade_df = glade_df.iloc[idx,:]
 
     real_df['GLADE_offset'] = d2d
-    real_df['GLADE_RA'] = glade_df.GLADE_RA
-    real_df['GLADE_dec'] = glade_df.GLADE_dec
-    real_df['GLADE_dist'] = glade_df.GLADE_dist
+    real_df['GLADE_RA'] = glade_df.GLADE_RA.values
+    real_df['GLADE_dec'] = glade_df.GLADE_dec.values
+    real_df['GLADE_dist'] = glade_df.GLADE_dist.values
 
     bogus_df['GLADE_offset'] = np.nan
     bogus_df['GLADE_RA'] = np.nan
