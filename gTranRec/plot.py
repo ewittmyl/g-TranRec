@@ -60,7 +60,9 @@ def generate_report(filename, thresh=0.5):
                                 plt.title("{}\nRA: {}\nDec: {}\nScore: {}".format(filename, candidate[1]['ra'], candidate[1]['dec'], candidate[1]['GTR_score']), loc='left', fontsize=10)
                         if i == 1:
                                 plt.title("Magnitude: {}".format(candidate[1]['mag']), loc='left', fontsize=10)
-                        # if i == 2:
+                        if i == 2:
+                                if 'GLADE_offset' in candidate.columns:
+                                        plt.title("GLADE: {}'', {}Mpc".format(candidate[1]['GLADE_offset'], candidate[1]['GLADE_dist']), loc='left', fontsize=10)
                         #         if ('mp_offset' in coords.columns) & ('NED_obj' in coords.columns) & ('GLADE_offset' in coords.columns):
                         #                 plt.title("Minor Planet: {}\nNED Object: {}\nGLADE: {}'', {}Mpc".format(coord[1]['mp_offset'], coord[1]['NED_obj'], coord[1]['GLADE_offset'], coord[1]['GLADE_dist']), loc='left', fontsize=10)
                         #         elif ('mp_offset' in coords.columns) & ('NED_obj' in coords.columns):
