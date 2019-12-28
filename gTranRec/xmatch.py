@@ -38,7 +38,7 @@ def XmatchGLADE(filename, glade_df, GTR_thresh=0.5):
     idx, d2d, _ = det_c.match_to_catalog_sky(glade_c)
     glade_df = glade_df.iloc[idx,:]
 
-    real_df['GLADE_offset'] = d2d
+    real_df['GLADE_offset'] = Angle(d2d, u.degree).arcsec
     real_df['GLADE_RA'] = glade_df.GLADE_RA.values
     real_df['GLADE_dec'] = glade_df.GLADE_dec.values
     real_df['GLADE_dist'] = glade_df.GLADE_dist.values
