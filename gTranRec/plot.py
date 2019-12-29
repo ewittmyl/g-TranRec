@@ -21,7 +21,7 @@ def generate_report(filename, thresh=0.5):
         pix_val.append(getdata(filename, 'IMAGE'))
         pix_val.append(getdata(filename, 'TEMPLATE'))
         pix_val.append(getdata(filename, 'DIFFERENCE'))
-        col = ['ra','dec','X_IMAGE','Y_IMAGE', 'GTR_score','mag']
+        col = ['ra','dec','X_IMAGE','Y_IMAGE', 'GTR_score','mag', 'GLADE_offset','GLADE_dist','GLADE_RA','GLADE_dec']
 
         # if 'mp_offset' in cand_list.columns:
         #         col += ['mp_offset']
@@ -63,7 +63,7 @@ def generate_report(filename, thresh=0.5):
                         if i == 2:
                                 if 'GLADE_offset' in candidates.columns:
                                         print(candidate[1]['GLADE_offset'])
-                                        plt.title("GLADE: {}'', {}Mpc".format(candidate[1]['GLADE_offset'], candidate[1]['GLADE_dist']), loc='left', fontsize=10)
+                                        plt.title("GLADE galaxy\n{}'', {}Mp\nRA, Dec:{}, {}".format(candidate[1]['GLADE_offset'], candidate[1]['GLADE_dist'], candidate[1]['GLADE_RA'], candidate[1]['GLADE_dec']), loc='left', fontsize=10)
                         #         if ('mp_offset' in coords.columns) & ('NED_obj' in coords.columns) & ('GLADE_offset' in coords.columns):
                         #                 plt.title("Minor Planet: {}\nNED Object: {}\nGLADE: {}'', {}Mpc".format(coord[1]['mp_offset'], coord[1]['NED_obj'], coord[1]['GLADE_offset'], coord[1]['GLADE_dist']), loc='left', fontsize=10)
                         #         elif ('mp_offset' in coords.columns) & ('NED_obj' in coords.columns):
