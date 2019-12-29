@@ -25,6 +25,7 @@ def main(science, template=None, thresh=0.5, xmatch=True, glade=None, near_galax
         position_weighting(science)
         if xmatch:
             XmatchGLADE(science, glade, GTR_thresh=thresh)
+            mp_check(science, GTR_thresh=thresh)
         if report:
             generate_report(science, thresh=thresh, near_galaxy=near_galaxy)
 
@@ -40,6 +41,7 @@ def main(science, template=None, thresh=0.5, xmatch=True, glade=None, near_galax
         position_weighting(science)
         if xmatch:
             XmatchGLADE(science, glade, GTR_thresh=xmatch_thresh)
+            mp_check(science, GTR_thresh=thresh)
         if report:
             generate_report(science, thresh=thresh, near_galaxy=near_galaxy)
 

@@ -23,10 +23,8 @@ def generate_report(filename, thresh=0.5, near_galaxy=True):
         pix_val.append(getdata(filename, 'DIFFERENCE'))
         col = ['ra','dec','X_IMAGE','Y_IMAGE', 'GTR_score','mag']
 
-        # if 'mp_offset' in cand_list.columns:
-        #         col += ['mp_offset']
-        # if 'NED_obj' in cand_list.columns:
-        #         col += ['NED_obj']
+        if 'mp_offset' in cand_list.columns:
+                col += ['mp_offset']
         if 'GLADE_offset' in candidates.columns:
                 col += ['GLADE_offset','GLADE_RA','GLADE_dec']
         if 'GLADE_dist' in candidates.columns:
@@ -34,7 +32,7 @@ def generate_report(filename, thresh=0.5, near_galaxy=True):
 
         candidates = candidates[col]
         if near_galaxy:
-                candidates = candidates[candidates.GLADE_offset<100]
+                candidates = candidates[candidates.GLADE_offset<60]
         interval = ZScaleInterval()
         j = 0
         stamps_fn = []
@@ -62,6 +60,8 @@ def generate_report(filename, thresh=0.5, near_galaxy=True):
                                 plt.title("{}\nRA: {}\nDec: {}\nScore: {}".format(filename, candidate[1]['ra'], candidate[1]['dec'], candidate[1]['GTR_score']), loc='left', fontsize=10)
                         if i == 1:
                                 plt.title("Magnitude: {}".format(candidate[1]['mag']), loc='left', fontsize=10)
+                                if 'mp_offset' in coords.columns:
+                                        plt.title("Minor Planet: {}".format(candidate[1]['mp_offset']), loc='left', fontsize=10)
                         if i == 2:
                                 if 'GLADE_offset' in candidates.columns:
                                         plt.title("GLADE galaxy\n{}'', {}Mpc\nRA, Dec: {}, {}".format(candidate[1]['GLADE_offset'], candidate[1]['GLADE_dist'], candidate[1]['GLADE_RA'], candidate[1]['GLADE_dec']), loc='left', fontsize=10)
