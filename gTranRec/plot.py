@@ -34,7 +34,7 @@ def generate_report(filename, thresh=0.5, near_galaxy=True):
 
         candidates = candidates[col]
         if near_galaxy:
-                candidates = candidates[candidates.GLADE_offset<60]
+                candidates = candidates[candidates.GLADE_offset<100]
         interval = ZScaleInterval()
         j = 0
         stamps_fn = []
