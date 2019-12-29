@@ -84,6 +84,7 @@ def mp_check(filename, GTR_thresh=0.5):
     mp_col = ['RA_deg','Dec_deg']
 
     try:
+        print("Minor Planet Checking...")
         # get coordinates of all mp in the science image
         mp_table = mpc.table[mp_col]
 

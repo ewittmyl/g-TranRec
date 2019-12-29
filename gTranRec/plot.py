@@ -60,8 +60,8 @@ def generate_report(filename, thresh=0.5, near_galaxy=True):
                                 plt.title("{}\nRA: {}\nDec: {}\nScore: {}".format(filename, candidate[1]['ra'], candidate[1]['dec'], candidate[1]['GTR_score']), loc='left', fontsize=10)
                         if i == 1:
                                 plt.title("Magnitude: {}".format(candidate[1]['mag']), loc='left', fontsize=10)
-                                if 'mp_offset' in coords.columns:
-                                        plt.title("Minor Planet: {}".format(candidate[1]['mp_offset']), loc='left', fontsize=10)
+                                if 'mp_offset' in candidates.columns:
+                                        plt.title("Magnitude: {}\nMinor Planet: {}".format(candidate[1]['mag'], candidate[1]['mp_offset']), loc='left', fontsize=10)
                         if i == 2:
                                 if 'GLADE_offset' in candidates.columns:
                                         plt.title("GLADE galaxy\n{}'', {}Mpc\nRA, Dec: {}, {}".format(candidate[1]['GLADE_offset'], candidate[1]['GLADE_dist'], candidate[1]['GLADE_RA'], candidate[1]['GLADE_dec']), loc='left', fontsize=10)

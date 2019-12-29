@@ -4,7 +4,7 @@ from .features import SExtractor, FeatureExtract
 from .model import CalcGTR
 from .postprocess import position_weighting
 from .plot import generate_report
-from .xmatch import XmatchGLADE
+from .xmatch import XmatchGLADE, mp_check
 import pandas as pd
 
 
