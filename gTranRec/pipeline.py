@@ -8,7 +8,7 @@ from .xmatch import XmatchGLADE
 import pandas as pd
 
 
-def main(science, template=None, thresh=0.5, xmatch=True, glade=None, report=False):
+def main(science, template=None, thresh=0.5, xmatch=True, glade=None, near_galaxy=True, report=False):
     # start timer
     start = time.time()
 
@@ -26,7 +26,7 @@ def main(science, template=None, thresh=0.5, xmatch=True, glade=None, report=Fal
         if xmatch:
             XmatchGLADE(science, glade, GTR_thresh=thresh)
         if report:
-            generate_report(science, thresh=thresh)
+            generate_report(science, thresh=thresh, near_galaxy=near_galaxy)
 
     else:
         template = template_align(science, template)
@@ -41,7 +41,7 @@ def main(science, template=None, thresh=0.5, xmatch=True, glade=None, report=Fal
         if xmatch:
             XmatchGLADE(science, glade, GTR_thresh=xmatch_thresh)
         if report:
-            generate_report(science, thresh=thresh)
+            generate_report(science, thresh=thresh, near_galaxy=near_galaxy)
 
     end = time.time()
     time_used = end - start
