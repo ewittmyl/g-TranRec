@@ -23,7 +23,7 @@ def generate_report(filename, thresh=0.5, near_galaxy=True):
         pix_val.append(getdata(filename, 'DIFFERENCE'))
         col = ['ra','dec','X_IMAGE','Y_IMAGE', 'GTR_score','mag']
 
-        if 'mp_offset' in cand_list.columns:
+        if 'mp_offset' in candidates.columns:
                 col += ['mp_offset']
         if 'GLADE_offset' in candidates.columns:
                 col += ['GLADE_offset','GLADE_RA','GLADE_dec']
