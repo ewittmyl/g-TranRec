@@ -288,6 +288,7 @@ class FeatureExtract():
         self.X['b_image'] = self.detab.B_IMAGE
         # number of masked pixel over the 7x7 box
         self.X['nmask'] = np.nansum(self.stamps[:,21//2-3:21//2+4, 21//2-3:21//2+4].reshape(-1,49)==0, axis=1)
+        self.X['nmask'] = self.X['nmask'] // 10
         
         # data cleaning
         self.data_cleaning()
