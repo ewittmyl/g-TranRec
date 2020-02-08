@@ -97,4 +97,20 @@ def fitgaussian(stamp, dim=15):
         fit_Rsquared = 0
     return p, fit_Rsquared
 
+def chunk_fit(ind, stamp_chuck, amp_dict, r_dict):
+    gauss_amp, gauss_R = [], []
+    for s in stamp_chuck:
+        try:
+            p, r = fitgaussian(s, dim=15)
+            gauss_amp.append(p[0])
+            gauss_R.append(r)
+        except RuntimeError:
+            gauss_amp.append(0)
+            gauss_R.append(0)
+    amp_dict[ind] = gauss_amp
+    r_dict[ind] = gauss_R
+
+    
+    
+
 

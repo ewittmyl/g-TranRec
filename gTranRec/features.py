@@ -11,7 +11,10 @@ from .image_process import image_extract
 from astropy.nddata import Cutout2D
 from scipy.optimize import curve_fit
 import pickle
-from .gaussian import fitgaussian
+from .gaussian import chunk_fit
+import multiprocessing import Process, cpu_count, Manager
+import math
+
 
 def FitsOp(filename, extname, dataframe, mode='append'): 
     """
@@ -301,19 +304,33 @@ class FeatureExtract():
 
         # fit gauss
         print("Fitting 2D Gaussian...")
-        gauss_amp, gauss_x, gauss_y, gauss_theta, gauss_R = [], [], [], [], []
-        for s in self.norm_stamps:
-            try:
-                p, r = fitgaussian(s, dim=15)
-                gauss_amp.append(p[0])
-                gauss_R.append(r)
-            except RuntimeError:
-                gauss_amp.append(0)
-                gauss_R.append(0)
+        # calculate the number of jobs per CPU
+        num_jobs = math.ceil(self.norm_stamps.shape[0] / cpu_count())
+        nstamps_chunks = [self.norm_stamps[x:x+num_jobs] for x in range(0, self.norm_stamps.shape[0], num_jobs)]
+
+        # define return values from each processor
+        gauss_amp = multiprocessing.Manager()
+        gauss_r = multiprocessing.Manager()
+        amp_dict = gauss_amp.dict()
+        r_dict = gauss_r.dict()
+        jobs = []
+        for i in range(cpu_count()):
+            p = Process(target=chunk_fit, args=(i,nstamps_chunks[i],amp_dict,r_dict))
+            jobs.append(p)
+            p.start()
+
+        for proc in jobs:
+            proc.join()
+
+        g_amp, g_r = [], []
+        for i in range(cpu_count()):
+            g_amp += amp_dict[i]
+            g_r += r_dict[i]
+        
         # best fit gaussian amplitude of the detection
-        self.X['gauss_amp'] = gauss_amp
+        self.X['gauss_amp'] = g_amp
         # R-squared statistic of the best fit gaussian
-        self.X['gauss_R'] = gauss_R
+        self.X['gauss_R'] = g_r
         # sum of the absolute pixel values over the entire stamp
         self.X['abs_pv'] = np.nansum(np.abs(self.norm_stamps.reshape(-1,441)), axis=1)
         # join X into detection table
