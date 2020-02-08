@@ -309,8 +309,8 @@ class FeatureExtract():
         nstamps_chunks = [self.norm_stamps[x:x+num_jobs] for x in range(0, self.norm_stamps.shape[0], num_jobs)]
 
         # define return values from each processor
-        gauss_amp = multiprocessing.Manager()
-        gauss_r = multiprocessing.Manager()
+        gauss_amp = Manager()
+        gauss_r = Manager()
         amp_dict = gauss_amp.dict()
         r_dict = gauss_r.dict()
         jobs = []
