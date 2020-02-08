@@ -12,7 +12,7 @@ from astropy.nddata import Cutout2D
 from scipy.optimize import curve_fit
 import pickle
 from .gaussian import chunk_fit
-import multiprocessing import Process, cpu_count, Manager
+from multiprocessing import Process, cpu_count, Manager
 import math
 
 
