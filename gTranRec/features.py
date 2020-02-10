@@ -375,7 +375,7 @@ class CalcALL():
     def __init__(self, filename):
         self.detab = fits2df(filename, 'DIFFERENCE_DETAB')
         self.image = getdata(filename, 'DIFFERENCE')
-        self.stamps = np.array([Cutout2D(image, (self.detab.iloc[i]['X_IMAGE']-1, self.detab.iloc[i]['Y_IMAGE']-1), 
+        self.stamps = np.array([Cutout2D(self.image, (self.detab.iloc[i]['X_IMAGE']-1, self.detab.iloc[i]['Y_IMAGE']-1), 
                         (21, 21), mode='partial').data.reshape((21, 21)) for i in np.arange(self.detab.shape[0])])
 
     def data_cleaning(self):
