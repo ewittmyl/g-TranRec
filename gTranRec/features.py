@@ -369,7 +369,7 @@ class TrainFeatureExtract():
         FitsOp(self.filename, '_'.join([self.image_type, 'STAMPS']), df, mode='append')
 
 
-def make_features(filename):
+def CalcALL(filename, model='RF'):
     detab = fits2df(filename, 'DIFFERENCE_DETAB')
     image = getdata(filename, 'DIFFERENCE')
     stamps = np.array([Cutout2D(image, (detab.iloc[i]['X_IMAGE']-1, detab.iloc[i]['Y_IMAGE']-1), 
@@ -450,6 +450,15 @@ def make_features(filename):
     pca_X = pca.transform(pca_X)
     pca_X = pd.DataFrame(pca_X, columns=pca_col)
     detab = detab.join(pca_X)
+
+    col = ['pca1', 'pca2', 'pca3', 'pca4', 'pca5', 'pca6', 'pca7', 'b_image',
+            'nmask', 'n3sig7', 'gauss_amp', 'gauss_R', 'abs_pv']
+    final_X = detab[col]
+
+    if model == 'RF':
+        m = pickle.load(open(getattr(config, 'rf_path'), 'rb'))
+        gtr_score = m.predict(final_X)
+        detab['GTR_score'] = gtr_score
 
     FitsOp(filename, 'DIFFERENCE_DETAB', detab, mode='update')
 

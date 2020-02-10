@@ -1,6 +1,6 @@
 import time
 from .image_process import unzip, template_align, image_subtract
-from .features import SExtractor, make_features
+from .features import SExtractor, CalcALL
 from .model import CalcGTR
 from .postprocess import position_weighting
 from .plot import generate_report
@@ -8,7 +8,7 @@ from .xmatch import XmatchGLADE, mp_check
 import pandas as pd
 
 
-def main(science, template=None, thresh=0.5, xmatch=True, glade=None, near_galaxy=True, report=False):
+def main(science, template=None, thresh=0.5, xmatch=False, glade=None, near_galaxy=False, report=False):
     # start timer
     start = time.time()
 
@@ -18,8 +18,7 @@ def main(science, template=None, thresh=0.5, xmatch=True, glade=None, near_galax
     if not template:
         SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
-        make_features(science)
-        CalcGTR(science, model='RF')
+        CalcALL(science, model='RF')
         position_weighting(science)
         if xmatch:
             XmatchGLADE(science, glade, GTR_thresh=thresh)
@@ -32,8 +31,7 @@ def main(science, template=None, thresh=0.5, xmatch=True, glade=None, near_galax
         image_subtract(science, template)
         SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
-        make_features(science)
-        CalcGTR(science, model='RF')
+        CalcALL(science, model='RF')
         position_weighting(science)
         if xmatch:
             XmatchGLADE(science, glade, GTR_thresh=xmatch_thresh)
