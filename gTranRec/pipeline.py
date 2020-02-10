@@ -18,8 +18,8 @@ def main(science, template=None, thresh=0.5, xmatch=False, glade=None, near_gala
     if not template:
         SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
-        CalcALL(science, model='RF')
-        position_weighting(science)
+        c = CalcALL(science)
+        c.make_table()
         if xmatch:
             XmatchGLADE(science, glade, GTR_thresh=thresh)
             mp_check(science, GTR_thresh=thresh)
@@ -31,8 +31,8 @@ def main(science, template=None, thresh=0.5, xmatch=False, glade=None, near_gala
         image_subtract(science, template)
         SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
-        CalcALL(science, model='RF')
-        position_weighting(science)
+        c = CalcALL(science)
+        c.make_table()
         if xmatch:
             XmatchGLADE(science, glade, GTR_thresh=xmatch_thresh)
             mp_check(science, GTR_thresh=thresh)

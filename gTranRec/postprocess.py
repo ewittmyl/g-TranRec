@@ -35,7 +35,4 @@ def position_weighting(filename):
     _, d2d, _ = diff_coord.match_to_catalog_sky(sci_coord)
     d2d = Angle(d2d, u.arcsec).arcsec
     weight = gauss_weight(filename, d2d)
-    print("Calculating weighted GTR score...")
-    
-    diff_df.GTR_score = weight * diff_df.GTR_score
-    FitsOp(filename, extname="DIFFERENCE_DETAB", dataframe=diff_df, mode="update")
+    return weight
