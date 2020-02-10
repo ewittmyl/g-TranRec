@@ -3,6 +3,7 @@ from astropy.io import fits
 import numpy as np
 import pandas as pd
 import alipy, os
+from astropy.table import Table
 
 def FitsOp(filename, extname, dataframe, mode='append'): 
     """
