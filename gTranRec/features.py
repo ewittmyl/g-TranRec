@@ -440,7 +440,7 @@ class CalcALL():
         self.detab['GTR_score'] = weight * gtr_score
 
 
-        FitsOp(self.filename, 'DIFFERENCE_DETAB', detab, mode='update')
+        FitsOp(self.filename, 'DIFFERENCE_DETAB', self.detab, mode='update')
 
 
     
