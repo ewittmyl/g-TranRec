@@ -373,6 +373,7 @@ class TrainFeatureExtract():
 
 class CalcALL():
     def __init__(self, filename):
+        self.filename = filename
         self.detab = fits2df(filename, 'DIFFERENCE_DETAB')
         self.image = getdata(filename, 'DIFFERENCE')
         self.stamps = np.array([Cutout2D(self.image, (self.detab.iloc[i]['X_IMAGE']-1, self.detab.iloc[i]['Y_IMAGE']-1), 
@@ -450,7 +451,7 @@ class CalcALL():
         return gtr_score
 
     def calc_weight(self):
-        sci_df = fits2df(filename, "IMAGE_DETAB")
+        sci_df = fits2df(self.filename, "IMAGE_DETAB")
         sci_coord = SkyCoord(ra=(sci_df['ra']*u.degree).values, dec=(sci_df['dec']*u.degree).values)
         diff_coord = SkyCoord(ra=(self.detab['ra']*u.degree).values, dec=(self.detab['dec']*u.degree).values)
         _, d2d, _ = diff_coord.match_to_catalog_sky(sci_coord)
@@ -459,7 +460,7 @@ class CalcALL():
         return weight
 
     def make_table(self):
-        print("Creating feature table for {}[{}]...".format(self.filename, self.image_type))
+        print("Creating feature table for {}[DIFFERENCE]...".format(self.filename))
         # initialize feature table X
         self.X = pd.DataFrame()
         # semiminor axis of the detection
@@ -498,7 +499,7 @@ class CalcALL():
         self.detab['GTR_score'] = weight * gtr_score
 
 
-        FitsOp(filename, 'DIFFERENCE_DETAB', detab, mode='update')
+        FitsOp(self.filename, 'DIFFERENCE_DETAB', detab, mode='update')
 
 
     
