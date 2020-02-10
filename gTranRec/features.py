@@ -16,6 +16,7 @@ import pickle
 from .gaussian import chunk_fit
 from multiprocessing import Process, cpu_count, Manager
 import math
+from .gaussian import gauss_weight
 
 
 def FitsOp(filename, extname, dataframe, mode='append'): 
@@ -456,7 +457,7 @@ class CalcALL():
         diff_coord = SkyCoord(ra=(self.detab['ra']*u.degree).values, dec=(self.detab['dec']*u.degree).values)
         _, d2d, _ = diff_coord.match_to_catalog_sky(sci_coord)
         d2d = Angle(d2d, u.arcsec).arcsec
-        weight = gauss_weight(filename, d2d)
+        weight = gauss_weight(self.filename, d2d)
         return weight
 
     def make_table(self):
