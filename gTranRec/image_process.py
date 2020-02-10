@@ -1,4 +1,4 @@
-from astropy.io.fits import getdata, getheader
+from astropy.io.fits import getdata, getheader, update
 from astropy.io import fits
 import numpy as np
 import pandas as pd
