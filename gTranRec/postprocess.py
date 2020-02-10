@@ -3,7 +3,7 @@ import numpy as np
 from astropy.coordinates import SkyCoord
 from astropy.coordinates import Angle
 import astropy.units as u
-from .features import fits2df, FitsOp
+from .image_process import fits2df, FitsOp
 from astropy.io.fits import getheader
 
 def gauss_weight(filename, sep, n_sigma=1):

@@ -1,6 +1,6 @@
 import os
 from astropy.io.fits import getheader, getdata
-from .features import fits2df, FitsOp
+from .image_process import fits2df, FitsOp
 from sklearn.decomposition import PCA
 import pandas as pd
 import numpy as np

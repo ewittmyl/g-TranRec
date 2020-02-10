@@ -5,7 +5,7 @@ from . import config
 import os
 import pandas as pd
 import numpy as np
-from .features import fits2df
+from .image_process import fits2df
 from sklearn.utils import shuffle
 import pickle
 

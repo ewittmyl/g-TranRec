@@ -4,6 +4,65 @@ import numpy as np
 import pandas as pd
 import alipy, os
 
+def FitsOp(filename, extname, dataframe, mode='append'): 
+    """
+    This function is to perform basic FITS operation, which includes appending, writing and updating extension table on the 
+    given FITS file.
+
+    Parameters
+    ----------
+    filename: str
+        FITS filename you want to operate on.
+    extname: str
+        Extension name of the table you want to operate on.
+    dataframe: pd.DataFrame
+        Pandas dataframe used to operate.
+    mode: str, optional
+        ['append'/'write'/'update']
+        Operation type. (default='append')
+    """
+    if mode == 'append':  
+        # add extension table to input FITS
+        print("Adding new extension table {} into {}...".format(extname, filename))
+        m = Table(dataframe.values, names=dataframe.columns)
+        hdu = fits.table_to_hdu(m)
+        with fits.open(filename, mode='update') as hdul0:
+            hdul0.append(hdu)
+            hdul0[-1].header['EXTNAME'] = extname
+            hdul0.flush()
+    elif mode == 'write':
+        print("Creating new FITS {}...".format(filename))
+        astropy_tab = Table.from_pandas(dataframe)
+        astropy_tab.write(filename, format='fits')
+        with fits.open(filename, mode='update') as hdul0:
+            hdul0[-1].header['EXTNAME'] = extname
+            hdul0.flush()
+    elif mode == 'update':
+        print("Updating {}[{}]...".format(filename, extname))
+        m = Table(dataframe.values, names=dataframe.columns)
+        hdr = getheader(filename, extname=extname)
+        update(filename, np.array(m), extname=extname, header=hdr)
+
+def fits2df(filename, extname):
+    """
+    This function is to load the FITS extension table and convert to Pandas DataFrame.
+
+    Parameters
+    ----------
+    filename: str
+        FITS filename you want to load.
+    extname: str
+        Extension name of the table you want to load.
+
+    Return
+    ------
+    out: pd.DataFrame
+        Extension table of the FITS file with DataFrame format.
+    """
+    df = getdata(filename, extname)
+    df = pd.DataFrame(np.array(df).byteswap().newbyteorder())
+    return df
+
 
 def unzip(filename):
     """

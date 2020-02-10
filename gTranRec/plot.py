@@ -8,7 +8,7 @@ from astropy.nddata import Cutout2D
 from astropy.visualization import ZScaleInterval
 from fpdf import FPDF
 import os
-from .features import fits2df
+from .image_process import fits2df
 
 def generate_report(filename, thresh=0.5, near_galaxy=True):
         detab = fits2df(filename, 'DIFFERENCE_DETAB')

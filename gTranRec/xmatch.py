@@ -1,4 +1,4 @@
-from .features import fits2df, FitsOp
+from .image_process import fits2df, FitsOp
 from astropy.coordinates import Angle
 import astropy.units as u
 from astropy.coordinates import SkyCoord, Distance
