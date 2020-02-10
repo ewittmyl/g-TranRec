@@ -1,6 +1,6 @@
 import time
 from .image_process import unzip, template_align, image_subtract
-from .features import SExtractor, FeatureExtract
+from .features import SExtractor, make_features
 from .model import CalcGTR
 from .postprocess import position_weighting
 from .plot import generate_report
