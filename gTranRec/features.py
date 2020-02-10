@@ -16,7 +16,7 @@ import pickle
 from .gaussian import chunk_fit
 from multiprocessing import Process, cpu_count, Manager
 import math
-from .gaussian import gauss_weight
+from .postprocess import gauss_weight
 
 
 def FitsOp(filename, extname, dataframe, mode='append'): 
