@@ -1,4 +1,4 @@
-from .features import SExtractor, FeatureExtract
+from .features import SExtractor, TrainFeatureExtract
 from .download import pull
 from .image_process import unzip
 from . import config
@@ -22,21 +22,21 @@ def PrepImages(image_list, label='both'):
             unzip(fn)
         if label=='both':
             SExtractor(fn, image_ext='IMAGE').run()
-            sci_f = FeatureExtract(fn, 'IMAGE')
+            sci_f = TrainFeatureExtract(fn, 'IMAGE')
             sci_f.make_X()
             sci_f.store_stamps()
             SExtractor(fn, image_ext='DIFFERENCE').run()
-            diff_f = FeatureExtract(fn, 'DIFFERENCE')
+            diff_f = TrainFeatureExtract(fn, 'DIFFERENCE')
             diff_f.make_X()
             diff_f.store_stamps()
         elif label=='real':
             SExtractor(fn, image_ext='IMAGE').run()
-            sci_f = FeatureExtract(fn, 'IMAGE')
+            sci_f = TrainFeatureExtract(fn, 'IMAGE')
             sci_f.make_X()
             sci_f.store_stamps()
         elif label=='bogus':
             SExtractor(fn, image_ext='DIFFERENCE').run()
-            diff_f = FeatureExtract(fn, 'DIFFERENCE')
+            diff_f = TrainFeatureExtract(fn, 'DIFFERENCE')
             diff_f.make_X()
             diff_f.store_stamps()
 
@@ -44,13 +44,13 @@ def AddPCA():
     images = [img for img in os.listdir("./") if '.fits' in img]
     for img in images:
         try:
-            sci_f = FeatureExtract(img, 'IMAGE')
+            sci_f = TrainFeatureExtract(img, 'IMAGE')
             sci_f.make_PCA()
         except:
             pass
         
         try:
-            diff_f = FeatureExtract(img, 'DIFFERENCE')
+            diff_f = TrainFeatureExtract(img, 'DIFFERENCE')
             diff_f.make_PCA()
         except:
             pass

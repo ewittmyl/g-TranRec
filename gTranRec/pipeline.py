@@ -18,9 +18,7 @@ def main(science, template=None, thresh=0.5, xmatch=True, glade=None, near_galax
     if not template:
         SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
-        diff_features = FeatureExtract(science, 'DIFFERENCE')
-        diff_features.make_X()
-        diff_features.make_PCA()
+        make_features(science)
         CalcGTR(science, model='RF')
         position_weighting(science)
         if xmatch:
@@ -34,9 +32,7 @@ def main(science, template=None, thresh=0.5, xmatch=True, glade=None, near_galax
         image_subtract(science, template)
         SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
-        diff_features = FeatureExtract(science, 'DIFFERENCE')
-        diff_features.make_X()
-        diff_features.make_PCA()
+        make_features(science)
         CalcGTR(science, model='RF')
         position_weighting(science)
         if xmatch:
