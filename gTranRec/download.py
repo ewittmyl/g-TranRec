@@ -59,7 +59,7 @@ def pull(username, password, filename, phase=4):
         obsdate = str(file_info['obsdate']).split(' ')[0].split("-")
         obsdate = date(int(obsdate[0]), int(obsdate[1]), int(obsdate[2]))
         host = "goto-observatory.warwick.ac.uk"
-        image_path = ["/export/gotodata1/gotophoto/storage/pipeline/", "/export/gotodata2/gotophoto/storage/pipeline/"]
+        image_path = ["/export/gotodata3/gotophoto/storage/pipeline/", "/export/gotodata2/gotophoto/storage/pipeline/"]
         for path in image_path:
                 if not os.path.isfile(filename):
                         try:
