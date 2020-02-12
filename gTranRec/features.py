@@ -436,6 +436,7 @@ class CalcALL():
 
         gtr_score = self.calc_gtr()
         weight = self.calc_weight()
+        self.detab['weight'] = weight
 
         self.detab['GTR_score'] = weight * gtr_score
 
