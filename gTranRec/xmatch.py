@@ -80,7 +80,7 @@ def mp_check(filename, GTR_thresh=0.5):
     bogus_df = detab[detab.GTR_score < GTR_thresh]
 
     # image_search with MPChecker
-    mpc.image_search(filename, imagetype='IMAGE')
+    mpc.image_search(filename)
     mp_col = ['RA_deg','Dec_deg']
 
     try:
