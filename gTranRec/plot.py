@@ -25,6 +25,7 @@ def generate_report(filename, thresh=0.5, near_galaxy=True):
 
         if 'mp_offset' in candidates.columns:
                 col += ['mp_offset']
+                candidates = candidates[candidates.mp_offset>5]
         if 'GLADE_offset' in candidates.columns:
                 col += ['GLADE_offset','GLADE_RA','GLADE_dec']
         if 'GLADE_dist' in candidates.columns:
