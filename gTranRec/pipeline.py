@@ -27,6 +27,7 @@ def main(science, template=None, thresh=0.5, xmatch=False, glade=None, near_gala
             generate_report(science, thresh=thresh, near_galaxy=near_galaxy)
 
     else:
+        unzip(template)
         template = template_align(science, template)
         image_subtract(science, template)
         SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
