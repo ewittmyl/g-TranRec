@@ -441,7 +441,7 @@ class CalcALL():
         self.detab = XmatchGLADE(self.detab, glade.copy(), GTR_thresh=thresh)
         self.detab = CalcWeight(self.filename, self.detab).calculate()
         self.detab['GTR_score'] = self.detab['weight'] * self.detab['GTR_score']
-        self.detab = mp_check(self.detab, GTR_thresh=thresh)
+        self.detab = mp_check(self.filename, self.detab, GTR_thresh=thresh)
 
 
         FitsOp(self.filename, 'DIFFERENCE_DETAB', self.detab, mode='update')
