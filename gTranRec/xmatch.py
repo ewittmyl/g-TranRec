@@ -51,7 +51,7 @@ def XmatchGLADE(detab, glade_df, GTR_thresh=0.5):
 
     return detab
 
-def mp_check(filename, GTR_thresh=0.5):
+def mp_check(filename, detab, GTR_thresh=0.5):
     """
     Cross-match with the Minor Planet Catalog within the FoV of 
     the image within a given region.
