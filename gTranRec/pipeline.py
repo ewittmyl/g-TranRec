@@ -21,7 +21,7 @@ def main(science, template=None, thresh=0.5, glade=None, near_galaxy=False, repo
         SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         c = CalcALL(science)
-        c.make_table(glade, GTR_thresh=thresh)
+        c.make_table(glade, thresh=thresh)
         if report:
             generate_report(science, thresh=thresh, near_galaxy=near_galaxy)
 
@@ -32,7 +32,7 @@ def main(science, template=None, thresh=0.5, glade=None, near_galaxy=False, repo
         SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         c = CalcALL(science)
-        c.make_table(glade, GTR_thresh=thresh)
+        c.make_table(glade, thresh=thresh)
         if report:
             generate_report(science, thresh=thresh, near_galaxy=near_galaxy)
 
