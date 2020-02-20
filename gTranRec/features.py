@@ -16,7 +16,8 @@ import pickle
 from .gaussian import chunk_fit
 from multiprocessing import Process, cpu_count, Manager
 import math
-from .postprocess import gauss_weight
+from .postprocess import CalcWeight
+from .xmatch import XmatchGLADE, mp_check
 
 
 class SExtractor():
@@ -400,7 +401,7 @@ class CalcALL():
         weight = gauss_weight(self.filename, d2d)
         return weight
 
-    def make_table(self):
+    def make_table(self, glade, thresh=0.5):
         print("Creating feature table for {}[DIFFERENCE]...".format(self.filename))
         # initialize feature table X
         self.X = pd.DataFrame()
@@ -435,10 +436,12 @@ class CalcALL():
         self.detab = self.detab.join(pca_X)
 
         gtr_score = self.calc_gtr()
-        weight = self.calc_weight()
-        self.detab['weight'] = weight
+        self.detab['GTR_score'] = gtr_score
 
-        self.detab['GTR_score'] = weight * gtr_score
+        self.detab = XmatchGLADE(self.detab, glade.copy(), GTR_thresh=thresh)
+        self.detab = CalcWeight(self.filename, self.detab).calculate()
+        self.detab['GTR_score'] = self.detab['weight'] * self.detab['GTR_score']
+        self.detab = mp_check(self.detab, GTR_thresh=thresh)
 
 
         FitsOp(self.filename, 'DIFFERENCE_DETAB', self.detab, mode='update')

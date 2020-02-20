@@ -25,8 +25,7 @@ def read_glade():
     cat = pd.DataFrame(np.genfromtxt(GLADE_PATH), columns=col)
     return cat
 
-def XmatchGLADE(filename, glade_df, GTR_thresh=0.5):
-    detab = fits2df(filename, 'DIFFERENCE_DETAB')
+def XmatchGLADE(detab, glade_df, GTR_thresh=0.5):
     real_df = detab[detab.GTR_score > GTR_thresh]
     bogus_df = detab[detab.GTR_score < GTR_thresh]
     # create prefix for GLADE table columns
@@ -50,7 +49,7 @@ def XmatchGLADE(filename, glade_df, GTR_thresh=0.5):
 
     detab = real_df.append(bogus_df, ignore_index = True)
 
-    FitsOp(filename, 'DIFFERENCE_DETAB', detab, mode='update')
+    return detab
 
 def mp_check(filename, GTR_thresh=0.5):
     """
@@ -75,7 +74,6 @@ def mp_check(filename, GTR_thresh=0.5):
 
 
     # read CANDIDATES_LIST
-    detab = fits2df(filename, 'DIFFERENCE_DETAB')
     real_df = detab[detab.GTR_score > GTR_thresh]
     bogus_df = detab[detab.GTR_score < GTR_thresh]
 
@@ -108,4 +106,4 @@ def mp_check(filename, GTR_thresh=0.5):
     del mpc
     del mp_table
     
-    FitsOp(filename, 'DIFFERENCE_DETAB', detab, mode='update')
+    return detab

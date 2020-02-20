@@ -4,25 +4,25 @@ from .features import SExtractor, CalcALL
 from .model import CalcGTR
 from .postprocess import position_weighting
 from .plot import generate_report
-from .xmatch import XmatchGLADE, mp_check
+from .xmatch import read_glade, XmatchGLADE, mp_check
 import pandas as pd
 
 
-def main(science, template=None, thresh=0.5, xmatch=False, glade=None, near_galaxy=False, report=False):
+def main(science, template=None, thresh=0.5, glade=None, near_galaxy=False, report=False):
     # start timer
     start = time.time()
 
     # funpack image
     unzip(science)
 
+    if not glade:
+        glade = read_glade()
+
     if not template:
         SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         c = CalcALL(science)
-        c.make_table()
-        if xmatch:
-            XmatchGLADE(science, glade, GTR_thresh=thresh)
-            mp_check(science, GTR_thresh=thresh)
+        c.make_table(glade, GTR_thresh=thresh)
         if report:
             generate_report(science, thresh=thresh, near_galaxy=near_galaxy)
 
@@ -33,10 +33,7 @@ def main(science, template=None, thresh=0.5, xmatch=False, glade=None, near_gala
         SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         c = CalcALL(science)
-        c.make_table()
-        if xmatch:
-            XmatchGLADE(science, glade, GTR_thresh=thresh)
-            mp_check(science, GTR_thresh=thresh)
+        c.make_table(glade, GTR_thresh=thresh)
         if report:
             generate_report(science, thresh=thresh, near_galaxy=near_galaxy)
 
