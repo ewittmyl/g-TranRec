@@ -15,6 +15,7 @@ def main(science, template=None, thresh=0.5, glade=None, near_galaxy=False, repo
     unzip(science)
 
     if not glade:
+        print("Reading GLADE catalog...")
         glade = read_glade()
 
     if not template:
