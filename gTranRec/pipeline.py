@@ -14,7 +14,7 @@ def main(science, template=None, thresh=0.5, glade=None, near_galaxy=False, repo
     # funpack image
     unzip(science)
 
-    if not glade:
+    if not isinstance(glade, pd.DataFrame):
         print("Reading GLADE catalog...")
         glade = read_glade()
 
