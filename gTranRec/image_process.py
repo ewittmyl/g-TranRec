@@ -227,8 +227,6 @@ def image_extract(filename, output=None, extname='IMAGE'):
         hdu = fits.PrimaryHDU(data, hdr)
         if not output:
             output = '_'.join([filename.split(".")[0], extname+'.fits'])
-        else:
-            continue
         hdu.writeto(output, clobber=True)
 
 # def scale_stamp(stamp):
