@@ -151,6 +151,10 @@ def template_align(science, template):
                                 outputshape, hdu=0, alifilepath=output)
 
     print("Image Alignment completed. {} is created.".format(output))
+    print("Copying science image to a new FITS...")
+    os.system("mv {} {}.copy".format(science, science))
+    image_extract('.'.join([science, 'copy']), output=science, extname='IMAGE')
+    os.system("rm -rf {}.copy".format(science))
     print("Appending TEMPLATE into {}...".format(science))
     with fits.open(science, mode='update') as hdul0:
         with fits.open(output, memmap=True) as hdul1:
@@ -198,7 +202,7 @@ def image_subtract(science, aligned_template):
 
 
 
-def image_extract(filename, extname='IMAGE'):
+def image_extract(filename, output=None, extname='IMAGE'):
         """
         Extracting a particular image from the FITS file.
 
@@ -221,7 +225,10 @@ def image_extract(filename, extname='IMAGE'):
 
         # re-create new FITS for extracted image
         hdu = fits.PrimaryHDU(data, hdr)
-        output = '_'.join([filename.split(".")[0], extname+'.fits'])
+        if not output:
+            output = '_'.join([filename.split(".")[0], extname+'.fits'])
+        else:
+            continue
         hdu.writeto(output, clobber=True)
 
 # def scale_stamp(stamp):
