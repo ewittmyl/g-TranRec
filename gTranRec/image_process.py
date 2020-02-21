@@ -199,6 +199,7 @@ def image_subtract(science, aligned_template):
 
     os.system("rm -rf {}".format(aligned_template))
     os.system("rm -rf {}".format(output))
+    os.system("rm -rf alipy_out")
 
 
 
