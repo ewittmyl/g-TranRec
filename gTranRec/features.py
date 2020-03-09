@@ -502,7 +502,7 @@ class CalcALL():
         self.diffphoto['gtr_wscore'] = self.diffphoto.weight * self.diffphoto.gtr_score
 
         self.diffphoto = mp_check(self.filename, self.diffphoto, self.thresh)
-        self.diffphoto.drop(columns=df.columns[df.dtypes=='object'], inplace=True)
+        self.diffphoto.drop(columns=self.diffphoto.columns[self.diffphoto.dtypes=='object'], inplace=True)
 
 
         FitsOp(self.filename, 'PHOTOMETRY_DIFF', self.diffphoto, mode='update')
