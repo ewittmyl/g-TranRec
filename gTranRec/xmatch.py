@@ -6,28 +6,10 @@ import numpy as np
 import pandas as pd
 from . import config
 
-def read_glade():
-    """
-    Loading the GLADE catalog from package data directory.
-
-    Return:
-    ----------
-    cat: pd.DataFrame
-        GLADE catalog
-    """
-    # load GLADE catalog
-    GLADE_PATH = getattr(config, 'glade_path')
-    col = ['PGC','GWGC name','HyperLEDA name',
-            '2MASS name','SDSS-DR12 name','flag1',
-            'RA','dec','dist','dist_err','z','B',
-            'B_err','B_Abs','J','J_err','H','H_err',
-            'K','K_err','flag2','flag3']
-    cat = pd.DataFrame(np.genfromtxt(GLADE_PATH), columns=col)
-    return cat
 
 def XmatchGLADE(detab, glade_df, GTR_thresh=0.5):
-    real_df = detab[detab.GTR_score > GTR_thresh]
-    bogus_df = detab[detab.GTR_score < GTR_thresh]
+    real_df = detab[detab.gtr_score > GTR_thresh]
+    bogus_df = detab[detab.gtr_score < GTR_thresh]
     # create prefix for GLADE table columns
     glade_df.columns = 'GLADE_'+glade_df.columns
     
@@ -74,8 +56,8 @@ def mp_check(filename, detab, GTR_thresh=0.5):
 
 
     # read CANDIDATES_LIST
-    real_df = detab[detab.GTR_score > GTR_thresh]
-    bogus_df = detab[detab.GTR_score < GTR_thresh]
+    real_df = detab[detab.gtr_score > GTR_thresh]
+    bogus_df = detab[detab.gtr_score < GTR_thresh]
 
     # image_search with MPChecker
     mpc.image_search(filename, imagetype='IMAGE')
@@ -100,10 +82,11 @@ def mp_check(filename, detab, GTR_thresh=0.5):
 
         detab = real_df.append(bogus_df, ignore_index = True)
 
+
     except:
         detab['mp_offset'] = np.nan
     
-    del mpc
     del mp_table
+    del mpc
     
     return detab
