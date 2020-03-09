@@ -12,7 +12,7 @@ def main(science, template=None, thresh=0.5, near_galaxy=False, report=False):
     start = time.time()
 
     # funpack image
-    # unzip(science)
+    unzip(science)
 
     if not template:
         c = CalcALL(science)
