@@ -81,11 +81,11 @@ def mp_check(filename, detab, GTR_thresh=0.5):
         bogus_df['mp_offset'] = np.nan
 
         detab = real_df.append(bogus_df, ignore_index = True)
-        del mp_table
 
     except:
         detab['mp_offset'] = np.nan
-    
+        
+    del mp_table
     del mpc
     
     return detab
