@@ -86,6 +86,7 @@ def mp_check(filename, detab, GTR_thresh=0.5):
     except:
         detab['mp_offset'] = np.nan
         
+    del mp_table
     del mpc
     
     return detab
