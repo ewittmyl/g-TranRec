@@ -15,7 +15,6 @@ def generate_report(filename, thresh=0.5, near_galaxy=True):
         candidates = detab[detab.gtr_wscore>thresh]
         candidates = candidates.sort_values(by='gtr_wscore', ascending=False)
         candidates = round(candidates, 5)
-        candidates = candidates.replace(np.nan, "--", regex=True)
 
         pix_val = []
         pix_val.append(getdata(filename, 'IMAGE'))
@@ -37,6 +36,7 @@ def generate_report(filename, thresh=0.5, near_galaxy=True):
         interval = ZScaleInterval()
         j = 0
         stamps_fn = []
+        candidates = candidates.replace(np.nan, "--", regex=True)
         for candidate in candidates.iterrows():
                 fig = plt.figure(figsize=(8,8))
                 for i, img_type in enumerate(['IMAGE','TEMPLATE','DIFFERENCE']):
