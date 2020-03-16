@@ -55,7 +55,7 @@ def generate_report(filename, thresh=0.5, near_galaxy=True, ned_filter=True):
                                 if 'GLADE_offset' in candidates.columns:
                                         r = candidate[1]['GLADE_offset'] / 1.24
                                         if r < 75:
-                                                circle = plt.Circle((75, 75), r, color='r', linewidth=1)
+                                                circle = plt.Circle((75, 75), r, color='g', fill=False, linewidth=0.5)
                                                 ax.add_artist(circle)
                         else:
                                 ax.set_xticks([])
