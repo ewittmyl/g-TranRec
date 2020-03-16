@@ -52,15 +52,15 @@ def generate_report(filename, thresh=0.5, near_galaxy=True, ned_filter=True):
                         if i == 0:
                                 ax.set_xticks([0,16.1])
                                 ax.set_xticklabels(['','20"'])
-                                if 'GLADE_offset' in candidates.columns:
-                                        r = candidate[1]['GLADE_offset'] / 1.24
-                                        if r < 75:
-                                                circle = plt.Circle((75, 75), r, color='r', fill=False, linewidth=1)
-                                                ax.add_artist(circle)
                         else:
                                 ax.set_xticks([])
                                 ax.set_xticklabels([])
                         ax.set_yticks([])
+                        if 'GLADE_offset' in candidates.columns:
+                                r = candidate[1]['GLADE_offset'] / 1.24
+                                if r < 75:
+                                        circle = plt.Circle((75, 75), r, color='r', fill=False, linewidth=0.8)
+                                        ax.add_artist(circle)
                         ax.axhline(75, xmin=0.4, xmax=0.45,color='red', linewidth=2)
                         ax.axhline(75, xmin=0.55, xmax=0.6,color='red', linewidth=2)
                         ax.axvline(75, ymin=0.4, ymax=0.45,color='red', linewidth=2)
