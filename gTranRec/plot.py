@@ -10,7 +10,7 @@ from fpdf import FPDF
 import os
 from .image_process import fits2df
 
-def generate_report(filename, thresh=0.5, near_galaxy=True):
+def generate_report(filename, thresh=0.5, near_galaxy=True, ned_filter=True):
         detab = fits2df(filename, 'PHOTOMETRY_DIFF')
         candidates = detab[detab.gtr_wscore>thresh]
         candidates = candidates.sort_values(by='gtr_wscore', ascending=False)
@@ -29,10 +29,14 @@ def generate_report(filename, thresh=0.5, near_galaxy=True):
                 col += ['GLADE_offset','GLADE_RA','GLADE_dec']
         if 'GLADE_dist' in candidates.columns:
                 col += ['GLADE_dist']
+        if 'ned_obj' in candidates.columns:
+                col += ['ned_obj']
 
         candidates = candidates[col]
         if near_galaxy:
                 candidates = candidates[candidates.GLADE_offset<30]
+        if ned_filter and ('ned_obj' in candidates.columns):
+                candidates = candidates[candidates.ned_obj==0]
         interval = ZScaleInterval()
         j = 0
         stamps_fn = []
@@ -48,6 +52,11 @@ def generate_report(filename, thresh=0.5, near_galaxy=True):
                         if i == 0:
                                 ax.set_xticks([0,16.1])
                                 ax.set_xticklabels(['','20"'])
+                                if 'GLADE_offset' in candidates.columns:
+                                        r = candidate[1]['GLADE_offset'] / 1.24
+                                        if r < 75:
+                                                circle = plt.Circle((75, 75), r, color='r')
+                                                ax.add_artist(circle)
                         else:
                                 ax.set_xticks([])
                                 ax.set_xticklabels([])
@@ -65,23 +74,7 @@ def generate_report(filename, thresh=0.5, near_galaxy=True):
                                         plt.title("Magnitude: {}\nMinor Planet: {}''".format(candidate[1]['mag'], candidate[1]['mp_offset']), loc='left', fontsize=10)
                         if i == 2:
                                 if 'GLADE_offset' in candidates.columns:
-                                        plt.title("GLADE galaxy\n{}'', {}Mpc\nRA, Dec: {}, {}".format(candidate[1]['GLADE_offset'], candidate[1]['GLADE_dist'], candidate[1]['GLADE_RA'], candidate[1]['GLADE_dec']), loc='left', fontsize=10)
-                        #         if ('mp_offset' in coords.columns) & ('NED_obj' in coords.columns) & ('GLADE_offset' in coords.columns):
-                        #                 plt.title("Minor Planet: {}\nNED Object: {}\nGLADE: {}'', {}Mpc".format(coord[1]['mp_offset'], coord[1]['NED_obj'], coord[1]['GLADE_offset'], coord[1]['GLADE_dist']), loc='left', fontsize=10)
-                        #         elif ('mp_offset' in coords.columns) & ('NED_obj' in coords.columns):
-                        #                 plt.title("Minor Planet: {}\nNED Object: {}".format(coord[1]['mp_offset'], coord[1]['NED_obj']), loc='left', fontsize=10)
-                        #         elif ('NED_obj' in coords.columns) & ('GLADE_offset' in coords.columns):
-                        #                 plt.title("NED Object: {}\nGLADE: {}'', {}Mpc".format(coord[1]['NED_obj'], coord[1]['GLADE_offset'], coord[1]['GLADE_dist']), loc='left', fontsize=10)
-                        #         elif ('mp_offset' in coords.columns) & ('GLADE_offset' in coords.columns):
-                        #                 plt.title("Minor Planet: {}\nGLADE: {}'', {}Mpc".format(coord[1]['mp_offset'], coord[1]['GLADE_offset'], coord[1]['GLADE_dist']), loc='left', fontsize=10)
-                        #         elif 'mp_offset' in coords.columns:
-                        #                 plt.title("Minor Planet: {}".format(coord[1]['mp_offset']), loc='left', fontsize=10)
-                        #         elif 'NED_obj' in coords.columns:
-                        #                 plt.title("NED Object: {}".format(coord[1]['NED_obj']), loc='left', fontsize=10)
-                        #         elif 'GLADE_offset' in coords.columns:
-                        #                 plt.title("GLADE: {}'', {}Mpc".format(coord[1]['GLADE_offset'], coord[1]['GLADE_dist']), loc='left', fontsize=10)
-                        #         else:
-                        #                 continue                
+                                        plt.title("GLADE galaxy\n{}'', {}Mpc\nRA, Dec: {}, {}".format(candidate[1]['GLADE_offset'], candidate[1]['GLADE_dist'], candidate[1]['GLADE_RA'], candidate[1]['GLADE_dec']), loc='left', fontsize=10)          
                 image_name = filename.split(".")[0] + '_' + str(j) + '.png'
                 stamps_fn.append(image_name)
                 plt.savefig(image_name, dpi=100, bbox_inches='tight')
