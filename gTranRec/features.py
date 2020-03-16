@@ -17,7 +17,7 @@ from .gaussian import chunk_fit
 from multiprocessing import Process, cpu_count, Manager
 import math
 from .postprocess import CalcWeight
-from .xmatch import XmatchGLADE, mp_check
+from .xmatch import XmatchGLADE, mp_check, XmatchNED
 import pkg_resources
 from .database import GladeDB
 
@@ -436,8 +436,8 @@ class CalcALL():
         weight = (1-scidiff_w)*np.exp(-gal_offset/(input_param['n_sig']*sig))+scidiff_w
 
         self.diffphoto['weight'] = weight
-        
 
+    
     def run(self, thresh=0.5):
         
         self.thresh = thresh
@@ -495,6 +495,7 @@ class CalcALL():
         self.diffphoto['gtr_score'] = gtr_score
 
         self.diffphoto = XmatchGLADE(self.diffphoto, self.glade.copy(), self.thresh)
+            
 
         self.scidiff_offset()
 
@@ -502,6 +503,13 @@ class CalcALL():
         self.diffphoto['gtr_wscore'] = self.diffphoto.weight * self.diffphoto.gtr_score
 
         self.diffphoto = mp_check(self.filename, self.diffphoto, self.thresh)
+
+        try:
+            ned_df = XmatchNED(self.diffphoto, r=3, GTR_thresh=self.thresh)
+            self.diffphoto = ned_df
+        except:
+            print("Cannot X-match with NED catalog...")
+            
         self.diffphoto.drop(columns=self.diffphoto.columns[self.diffphoto.dtypes=='object'], inplace=True)
 
 
