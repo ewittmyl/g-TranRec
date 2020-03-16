@@ -5,6 +5,7 @@ from astropy.coordinates import SkyCoord, Distance
 import numpy as np
 import pandas as pd
 from . import config
+from astroquery.ned import Ned
 
 
 def XmatchGLADE(detab, glade_df, GTR_thresh=0.5):
@@ -86,5 +87,33 @@ def mp_check(filename, detab, GTR_thresh=0.5):
         detab['mp_offset'] = np.nan
         
     del mpc
+    
+    return detab
+
+def XmatchNED(detab, r=3, GTR_thresh=0.5):
+    real_df = detab[detab.gtr_wscore > GTR_thresh]
+    bogus_df = detab[detab.gtr_wscore < GTR_thresh]
+    
+    coord = SkyCoord(ra=real_df.ra.values, dec=real_df.dec.values, unit=(u.degree, u.degree), frame='icrs')
+    r = u.Quantity(r, u.arcsec)
+    type_list = []
+    i = 0
+    for c in coord:
+        print("\Xmatching with NED: {}/{}".format(i+1, real_df.shape[0]), end="\r")
+        xdf = Ned.query_region(c, r)
+        if len(xdf) == 0:
+            type_list.append(0)
+        else:
+            xdf.sort('Separation')
+            if 'G' in str(xdf['Type'][0])[2:-1]:
+                type_list.append(0)
+            else:
+                type_list.append(1)
+        i += 1
+    
+    real_df['ned_obj'] = type_list
+    bogus_df['ned_obj'] = 0
+    
+    detab = real_df.append(bogus_df, ignore_index = True)
     
     return detab
