@@ -10,7 +10,7 @@ from fpdf import FPDF
 import os
 from .image_process import fits2df
 
-def generate_report(filename, thresh=0.5, near_galaxy=True, ned_filter=True):
+def generate_report(filename, thresh=0.5, near_galaxy=True, xmatch_filter=True):
         detab = fits2df(filename, 'PHOTOMETRY_DIFF')
         candidates = detab[detab.gtr_wscore>thresh]
         candidates = candidates.sort_values(by='gtr_wscore', ascending=False)
@@ -29,14 +29,14 @@ def generate_report(filename, thresh=0.5, near_galaxy=True, ned_filter=True):
                 col += ['GLADE_offset','GLADE_RA','GLADE_dec']
         if 'GLADE_dist' in candidates.columns:
                 col += ['GLADE_dist']
-        if 'ned_obj' in candidates.columns:
-                col += ['ned_obj']
+        if 'xmatch_obj' in candidates.columns:
+                col += ['xmatch_obj']
 
         candidates = candidates[col]
         if near_galaxy:
                 candidates = candidates[candidates.GLADE_offset<30]
-        if ned_filter and ('ned_obj' in candidates.columns):
-                candidates = candidates[candidates.ned_obj==0]
+        if xmatch_filter and ('xmatch_obj' in candidates.columns):
+                candidates = candidates[candidates.xmatch_obj==0]
         interval = ZScaleInterval()
         j = 0
         stamps_fn = []

@@ -90,29 +90,43 @@ def mp_check(filename, detab, GTR_thresh=0.5):
     
     return detab
 
-def XmatchNED(detab, r=3, GTR_thresh=0.5):
+def astroquery_xmatch(detab, r=3, GTR_thresh=0.5):
     real_df = detab[detab.gtr_wscore > GTR_thresh]
     bogus_df = detab[detab.gtr_wscore < GTR_thresh]
     
     coord = SkyCoord(ra=real_df.ra.values, dec=real_df.dec.values, unit=(u.degree, u.degree), frame='icrs')
     r = u.Quantity(r, u.arcsec)
-    type_list = []
-    i = 0
-    for c in coord:
+    xmatch_obj = []
+    for i in range(real_df.shape[0]):
+        c = coord[i]
+        ra, dec = real_df.ra.values[i], real_df.dec.values[i]
         print("\Xmatching with NED: {}/{}".format(i+1, real_df.shape[0]), end="\r")
-        xdf = Ned.query_region(c, r)
-        if len(xdf) == 0:
-            type_list.append(0)
-        else:
-            xdf.sort('Separation')
-            if 'G' in str(xdf['Type'][0])[2:-1]:
-                type_list.append(0)
+        ned_df = Ned.query_region(c, r_q)
+            
+        if len(ned_df) == 0:
+            j = 0
+            while j<5:
+                try:
+                    print("\Xmatching with SIMBAD: {}/{}".format(i+1, real_df.shape[0]), end="\r")
+                    simbad_df = Simbad.query_criteria('region(circle, gal, {0} {1:+f}, {2}s)'.format(ra, dec, r), otype='*')
+                    break
+                except:
+                    simbad_df = None
+                    j+=1
+            if simbad_df is None:
+                xmatch_obj.append(0)
             else:
-                type_list.append(1)
-        i += 1
+                xmatch_obj.append(2)
+            
+        else:
+            ned_df.sort('Separation')
+            if 'G' in str(ned_df['Type'][0])[2:-1]:
+                xmatch_obj.append(0)
+            else:
+                xmatch_obj.append(1)
     
-    real_df['ned_obj'] = type_list
-    bogus_df['ned_obj'] = 0
+    real_df['ned_obj'] = xmatch_obj
+    bogus_df['ned_obj'] = np.nan
     
     detab = real_df.append(bogus_df, ignore_index = True)
     
