@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 from . import config
 from astroquery.ned import Ned
+from astroquery.simbad import Simbad
+from astroquery.heasarc import Heasarc
 
 
 def XmatchGLADE(detab, glade_df, GTR_thresh=0.5):
@@ -95,7 +97,7 @@ def astroquery_xmatch(detab, r=3, GTR_thresh=0.5):
     bogus_df = detab[detab.gtr_wscore < GTR_thresh]
     
     coord = SkyCoord(ra=real_df.ra.values, dec=real_df.dec.values, unit=(u.degree, u.degree), frame='icrs')
-    r = u.Quantity(r, u.arcsec)
+    r_q = u.Quantity(r, u.arcsec)
     xmatch_obj = []
     for i in range(real_df.shape[0]):
         c = coord[i]
@@ -114,7 +116,13 @@ def astroquery_xmatch(detab, r=3, GTR_thresh=0.5):
                     simbad_df = None
                     j+=1
             if simbad_df is None:
-                xmatch_obj.append(0)
+                try:
+                    heasarc = Heasarc()
+                    gcvs_df = heasarc.query_region(c, mission='GCVS', radius='{} arcsec'.format(r))  
+                    if not len(gcvs_df) == 0:
+                        xmatch_obj.append(3)
+                except TypeError:
+                    xmatch_obj.append(0)
             else:
                 xmatch_obj.append(2)
             
@@ -125,8 +133,8 @@ def astroquery_xmatch(detab, r=3, GTR_thresh=0.5):
             else:
                 xmatch_obj.append(1)
     
-    real_df['ned_obj'] = xmatch_obj
-    bogus_df['ned_obj'] = np.nan
+    real_df['xmatch_obj'] = xmatch_obj
+    bogus_df['xmatch_obj'] = np.nan
     
     detab = real_df.append(bogus_df, ignore_index = True)
     
