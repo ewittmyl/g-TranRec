@@ -505,7 +505,7 @@ class CalcALL():
         self.diffphoto = mp_check(self.filename, self.diffphoto, self.thresh)
 
         try:
-            xmatch_df = astroquery_xmatch(self.diffphoto, r=3, GTR_thresh=self.thresh)
+            xmatch_df = astroquery_xmatch(self.diffphoto, r=5, GTR_thresh=self.thresh)
             self.diffphoto = xmatch_df
         except:
             print("Cannot X-match with NED and SIMBAD catalog...")

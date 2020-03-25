@@ -10,7 +10,7 @@ from fpdf import FPDF
 import os
 from .image_process import fits2df
 
-def generate_report(filename, thresh=0.5, near_galaxy=True, xmatch_filter=True):
+def generate_report(filename, thresh=0.5, near_galaxy=True, xmatch_filter=False):
         detab = fits2df(filename, 'PHOTOMETRY_DIFF')
         candidates = detab[detab.gtr_wscore>thresh]
         candidates = candidates.sort_values(by='gtr_wscore', ascending=False)
@@ -72,7 +72,7 @@ def generate_report(filename, thresh=0.5, near_galaxy=True, xmatch_filter=True):
                         if i == 1:
                                 plt.title("Magnitude: {}".format(candidate[1]['mag']), loc='left', fontsize=10)
                                 if 'mp_offset' in candidates.columns:
-                                        plt.title("Magnitude: {}\nMinor Planet: {}''".format(candidate[1]['mag'], candidate[1]['mp_offset']), loc='left', fontsize=10)
+                                        plt.title("Magnitude: {}\nMinor Planet: {}''\nXmatch Label: {}".format(candidate[1]['mag'], candidate[1]['mp_offset'], candidate[1]['xmatch_obj']), loc='left', fontsize=10)
                         if i == 2:
                                 if 'GLADE_offset' in candidates.columns:
                                         plt.title("GLADE galaxy\n{}'', {}Mpc\nRA, Dec: {}, {}".format(candidate[1]['GLADE_offset'], candidate[1]['GLADE_dist'], candidate[1]['GLADE_RA'], candidate[1]['GLADE_dec']), loc='left', fontsize=10)          

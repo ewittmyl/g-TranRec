@@ -92,7 +92,7 @@ def mp_check(filename, detab, GTR_thresh=0.5):
     
     return detab
 
-def astroquery_xmatch(detab, r=3, GTR_thresh=0.5):
+def astroquery_xmatch(detab, r=5, GTR_thresh=0.5):
     real_df = detab[detab.gtr_wscore > GTR_thresh]
     bogus_df = detab[detab.gtr_wscore < GTR_thresh]
     
