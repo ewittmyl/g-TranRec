@@ -446,6 +446,7 @@ class CalcALL():
         self.diffphoto = fits2df(self.filename, self.parameters['diffphoto'])
         self.sciphoto = fits2df(self.filename, self.parameters['sciphoto'])
         self.glade = GladeDB.image_search(self.filename)
+        self.fwhm = self.sciphoto.FWHM_IMAGE.median()
 
         # load difference images
         self.diffimg = getdata(self.filename, self.parameters['diffimage'])
@@ -505,7 +506,8 @@ class CalcALL():
         self.diffphoto = mp_check(self.filename, self.diffphoto, self.thresh)
 
         try:
-            xmatch_df = astroquery_xmatch(self.diffphoto, r=5, GTR_thresh=self.thresh)
+            radius = self.fwhm * 1.24
+            xmatch_df = astroquery_xmatch(self.diffphoto, r=radius, GTR_thresh=self.thresh)
             self.diffphoto = xmatch_df
         except:
             print("Cannot X-match with NED and SIMBAD catalog...")
