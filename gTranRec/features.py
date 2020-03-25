@@ -506,7 +506,7 @@ class CalcALL():
         self.diffphoto = mp_check(self.filename, self.diffphoto, self.thresh)
 
         try:
-            radius = self.fwhm * 1.24
+            radius = ( self.fwhm * 1.24 ) / 2
             xmatch_df = astroquery_xmatch(self.diffphoto, r=radius, GTR_thresh=self.thresh)
             self.diffphoto = xmatch_df
         except:
