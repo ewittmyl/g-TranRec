@@ -103,19 +103,28 @@ def astroquery_xmatch(detab, r=5, GTR_thresh=0.5):
         c = coord[i]
         ra, dec = real_df.ra.values[i], real_df.dec.values[i]
         print("\Xmatching with NED: {}/{}".format(i+1, real_df.shape[0]), end="\r")
-        ned_df = Ned.query_region(c, r_q)
+        j = 0
+        while j<5:
+            try:
+                ned_df = Ned.query_region(c, r_q)
+                break
+            except:
+                ned_df = None
+                j+=1
+
             
-        if len(ned_df) == 0:
+        if (len(ned_df) == 0) or (ned_df is None):
             j = 0
+            print("\Xmatching with SIMBAD: {}/{}".format(i+1, real_df.shape[0]), end="\r")
             while j<5:
                 try:
-                    print("\Xmatching with SIMBAD: {}/{}".format(i+1, real_df.shape[0]), end="\r")
                     simbad_df = Simbad.query_criteria('region(circle, gal, {0} {1:+f}, {2}s)'.format(ra, dec, r), otype='*')
                     break
                 except:
                     simbad_df = None
                     j+=1
             if simbad_df is None:
+                print("\Xmatching with GCVS: {}/{}".format(i+1, real_df.shape[0]), end="\r")
                 try:
                     heasarc = Heasarc()
                     gcvs_df = heasarc.query_region(c, mission='GCVS', radius='{} arcsec'.format(r))  
