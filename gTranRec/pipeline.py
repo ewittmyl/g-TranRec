@@ -31,7 +31,7 @@ def main(science, template=None, thresh=0.5, near_galaxy=False, report=False):
         c = CalcALL(science)
         c.run(thresh=thresh)
         if report:
-            generate_report(science, output=science.split('.')[0] + '_report_sub.pdf', thresh=thresh, near_galaxy=near_galaxy)
+            generate_report(science, output='{}_report_sub.pdf'.format(science.split('.')[0]), thresh=thresh, near_galaxy=near_galaxy)
 
     end = time.time()
     time_used = end - start
