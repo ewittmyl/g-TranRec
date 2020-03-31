@@ -26,7 +26,7 @@ def main(science, template=None, thresh=0.5, near_galaxy=False, report=False):
         image_subtract(science, template)
         SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         c = CalcALL(science)
-        c.make_table(glade, thresh=thresh)
+        c.run(thresh=thresh)
         if report:
             generate_report(science, thresh=thresh, near_galaxy=near_galaxy)
 
