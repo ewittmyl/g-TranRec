@@ -1,6 +1,6 @@
 import time
 from .image_process import unzip, template_align, image_subtract
-from .features import CalcALL
+from .features import SExtractor, CalcALL
 from .model import CalcGTR
 from .plot import generate_report
 from .xmatch import XmatchGLADE, mp_check
