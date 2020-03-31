@@ -10,7 +10,7 @@ from fpdf import FPDF
 import os
 from .image_process import fits2df
 
-def generate_report(filename, thresh=0.5, near_galaxy=True, xmatch_filter=True):
+def generate_report(filename, output=None, thresh=0.5, near_galaxy=True, xmatch_filter=True):
         detab = fits2df(filename, 'PHOTOMETRY_DIFF')
         candidates = detab[detab.gtr_wscore>thresh]
         candidates = candidates.sort_values(by='gtr_wscore', ascending=False)
@@ -88,6 +88,9 @@ def generate_report(filename, thresh=0.5, near_galaxy=True, xmatch_filter=True):
                 print("\rProcessing: {}/{}".format(i+1, len(stamps_fn)), end="\r")
                 pdf.add_page()
                 pdf.image(thumbnail)
-        report_fn = filename.split(".")[0] + '_report.pdf'
+        if output is None:
+                report_fn = filename.split(".")[0] + '_report.pdf'
+        else:
+                report_fn = output
         pdf.output(report_fn, "F")
         os.system("rm -rf *png")
