@@ -24,7 +24,6 @@ def main(science, template=None, thresh=0.5, near_galaxy=False, report=False):
         unzip(template)
         template = template_align(science, template)
         image_subtract(science, template)
-        SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         c = CalcALL(science)
         c.make_table(glade, thresh=thresh)

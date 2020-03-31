@@ -229,15 +229,3 @@ def image_extract(filename, output=None, extname='IMAGE'):
         if not output:
             output = '_'.join([filename.split(".")[0], extname+'.fits'])
         hdu.writeto(output, clobber=True)
-
-# def scale_stamp(stamp):
-#         print("Normalizing thumbnails...")
-#         # flatten the stamp array
-#         flat_stamps = stamp.ravel()
-#         # calculate p-med(p)
-#         diff = flat_stamps-(np.median(flat_stamps)+1e-6)
-#         # calculate |p-med(p)|/sigma
-#         s2n = np.abs(diff)/np.std(flat_stamps)
-#         norm_stamps = np.sign(diff)*np.log10(1+s2n)
-#         norm_stamps = norm_stamps.reshape(21, 21)
-#         return norm_stamps

@@ -162,13 +162,18 @@ class SExtractor():
             wcs.append(w.all_pix2world(c[1]['X_IMAGE']-1, c[1]['Y_IMAGE']-1, 0))
         wcs = pd.DataFrame(wcs, columns=['ra','dec'])
         final_det_tab = wcs.join(detection_table).astype('float')
+        final_det_tab['x'] = final_det_tab['X_IMAGE']
+        final_det_tab['y'] = final_det_tab['Y_IMAGE']
 
         # photometric calibration
         hdr = getheader(self.filename, 'IMAGE')
         final_det_tab['mag'] = hdr['CALAP']*final_det_tab['MAG_AUTO']+hdr['CALZP']
 
         # add extension table to input FITS
-        FitsOp(self.filename, '_'.join([self.extname, 'DETAB']), final_det_tab, mode='append')
+        if self.extname == 'IMAGE':
+            FitsOp(self.filename, 'PHOTOMETRY', final_det_tab, mode='append')
+        elif self.extname == 'DIFFERENCE':
+            FitsOp(self.filename, 'PHOTOMETRY_DIFF', final_det_tab, mode='append')
         
         # for testing the optimal thresh and minarea
         # FitsOp(self.filename.split(".")[0]+'_sex.fits', '_'.join([self.extname, 'DETAB']), final_det_tab, mode='write')
