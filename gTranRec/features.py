@@ -401,10 +401,12 @@ class CalcALL():
         
         # make stamp for each detections on the difference image
         self.stamping(image_type=image_type)
-        print(self.stamps.shape)
         # define feature table
         self.X = pd.DataFrame()
-        self.X['b_image'] = self.sciphoto['B_IMAGE']
+        if image_type == 'science':
+            self.X['b_image'] = self.sciphoto['B_IMAGE']
+        elif image_type == 'difference':
+            self.X['b_image'] = self.diffphoto['B_IMAGE']
 
         # create features
         self.X['nmask'] = np.nansum(self.stamps[:,21//2-3:21//2+4, 21//2-3:21//2+4].reshape(-1,49)==0, axis=1)
