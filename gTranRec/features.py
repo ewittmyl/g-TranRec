@@ -401,6 +401,7 @@ class CalcALL():
         
         # make stamp for each detections on the difference image
         self.stamping(image_type=image_type)
+        print(self.stamps.shape)
         # define feature table
         self.X = pd.DataFrame()
         self.X['b_image'] = self.sciphoto['B_IMAGE']
