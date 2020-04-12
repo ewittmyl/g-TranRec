@@ -428,14 +428,14 @@ class CalcALL():
         # R-squared statistic of the best fit gaussian
         self.X['gauss_R'] = g_r
 
-        if image_type=='real':
+        if image_type=='science':
             new_photo = self.sciphoto.join(self.X)
         elif image_type=='difference':
             new_photo = self.diffphoto.join(self.X)
         
         new_photo.drop(columns=new_photo.columns[new_photo.dtypes=='object'], inplace=True)
 
-        if image_type=='real':
+        if image_type=='science':
             FitsOp(self.filename, 'PHOTOMETRY', new_photo, mode='update')
         elif image_type=='difference':
             FitsOp(self.filename, 'PHOTOMETRY_DIFF', new_photo, mode='update')
