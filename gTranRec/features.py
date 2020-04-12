@@ -402,6 +402,7 @@ class CalcALL():
             
         # make stamp for each detections on the difference image
         self.stamping(image_type=image_type)
+
         # define feature table
         self.X = pd.DataFrame()
         if image_type == 'science':
@@ -444,4 +445,35 @@ class CalcALL():
         elif image_type=='difference':
             FitsOp(self.filename, 'PHOTOMETRY_DIFF', new_photo, mode='update')
 
+    def save_pca(self, image_type):
+
+        if image_type == 'difference':
+            # load all useful tables
+            self.diffphoto = fits2df(self.filename, self.parameters['diffphoto'])
+            self.diffimg = getdata(self.filename, self.parameters['diffimage'])
+        elif image_type == 'science':
+            # load difference images
+            self.sciphoto = fits2df(self.filename, self.parameters['sciphoto'])
+            self.sciimg = getdata(self.filename, self.parameters['sciimage'])
+            
+        # make stamp for each detections on the difference image
+        self.stamping(image_type=image_type)
+
+        # data cleaning
+        self.cleaning()
+
+        # normalize the stamps
+        self.normalize_stamps()
+
+        if image_type=='science':
+            new_photo = self.sciphoto.join(self.PCA_transform())
+        elif image_type=='difference':
+            new_photo = self.diffphoto.join(self.PCA_transform())
+
+        new_photo.drop(columns=new_photo.columns[new_photo.dtypes=='object'], inplace=True)
+
+        if image_type=='science':
+            FitsOp(self.filename, 'PHOTOMETRY', new_photo, mode='update')
+        elif image_type=='difference':
+            FitsOp(self.filename, 'PHOTOMETRY_DIFF', new_photo, mode='update')
 
