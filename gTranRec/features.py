@@ -391,14 +391,15 @@ class CalcALL():
     
     def save_features(self, image_type):
         
-        # load all useful tables
-        self.diffphoto = fits2df(self.filename, self.parameters['diffphoto'])
-        self.sciphoto = fits2df(self.filename, self.parameters['sciphoto'])
-
-        # load difference images
-        self.sciimg = getdata(self.filename, self.parameters['sciimage'])
-        self.diffimg = getdata(self.filename, self.parameters['diffimage'])
-        
+        if image_type == 'difference':
+            # load all useful tables
+            self.diffphoto = fits2df(self.filename, self.parameters['diffphoto'])
+            self.diffimg = getdata(self.filename, self.parameters['diffimage'])
+        elif image_type == 'science':
+            # load difference images
+            self.sciphoto = fits2df(self.filename, self.parameters['sciphoto'])
+            self.sciimg = getdata(self.filename, self.parameters['sciimage'])
+            
         # make stamp for each detections on the difference image
         self.stamping(image_type=image_type)
         # define feature table
