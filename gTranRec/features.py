@@ -182,143 +182,6 @@ class SExtractor():
         cmd = ' '.join(['rm', '-rf', intermediate_fn])
         os.system(cmd)
 
-class TrainFeatureExtract():
-    """
-    This Class.Obj is used to create the feature table for performing machine learning. It takes the extension table 
-    '<image_ext>_DETAB' in the FITS as an input. Therefore, make sure you have already run 'SExtractor().run()' to create 
-    the detection table for the image first. 
-
-    Parameters
-    ----------
-    filename: str
-        FITS filename you want to run on.
-    image_ext: str, optional
-        Extension name of the image. (default='DIFFERENCE')
-    """
-    def __init__(self, filename, image_ext='DIFFERENCE'):
-        # rename the filename 
-        self.filename = filename
-        # indicate image_type
-        self.image_type = image_ext
-        # recall detection table extname
-        self.detab_extname = '_'.join([image_ext, 'DETAB'])
-        # read-in detection table
-        self.detab = fits2df(filename, self.detab_extname)
-        # load image
-        self.image = getdata(filename, image_ext)
-        # create stamps
-        self.stamps = np.array([Cutout2D(self.image, (self.detab.iloc[i]['X_IMAGE']-1, self.detab.iloc[i]['Y_IMAGE']-1), 
-                    (21, 21), mode='partial').data.reshape((21, 21)) for i in np.arange(self.detab.shape[0])])
-
-    def data_cleaning(self):
-        print("Data cleaning...")
-        self.stamps = self.stamps.reshape(-1, 441)
-        # replace all 0 by NaN
-        self.stamps[self.stamps == 0] = np.nan
-        # calculate the median noise level for each row (detection)
-        row_median = np.nanmedian(self.stamps, axis=1)
-        #Find indicies that you need to replace
-        inds = np.where(np.isnan(self.stamps))
-        # replace all NaN by the detection median
-        self.stamps[inds] = np.take(row_median, inds[0])
-
-
-    def normalize_stamps(self):
-        print("Normalizing thumbnails...")
-        # flatten the stamp array
-        flat_stamps = self.stamps.reshape(-1, 441)
-        # calculate p-med(p)
-        diff = flat_stamps-np.repeat(np.median(flat_stamps, axis=1)+1e-6, 441).reshape((flat_stamps.shape[0], 441))
-        # calculate |p-med(p)|/sigma
-        s2n = np.abs(diff)/np.repeat(np.std(flat_stamps, axis=1), 441).reshape((flat_stamps.shape[0], 441))
-        self.norm_stamps = np.sign(diff)*np.log10(1+s2n)
-        self.norm_stamps = self.norm_stamps.reshape(-1, 21, 21)
-
-    
-    def make_X(self):
-        print("Creating feature table for {}[{}]...".format(self.filename, self.image_type))
-        # initialize feature table X
-        self.X = pd.DataFrame()
-        # semiminor axis of the detection
-        self.X['b_image'] = self.detab.B_IMAGE
-        # number of masked pixel over the 7x7 box
-        self.X['nmask'] = np.nansum(self.stamps[:,21//2-3:21//2+4, 21//2-3:21//2+4].reshape(-1,49)==0, axis=1)
-        self.X['nmask'] = self.X['nmask'] // 10
-        
-        # data cleaning
-        self.data_cleaning()
-        # normalize the stamp
-        self.normalize_stamps()
-        # number of pixels with value less than -3sigma level over the 7x7 box
-        sigma3 = np.std(self.norm_stamps.reshape(-1, 441), axis=1)
-        sigma3_matrix = np.repeat(-3*sigma3, 49).reshape((sigma3.shape[0], 49))
-        self.X['n3sig7'] = np.nansum(self.norm_stamps[:,21//2-3:21//2+4, 21//2-3:21//2+4].reshape(-1, 49) < sigma3_matrix, axis=1)
-
-        # fit gauss
-        print("Fitting 2D Gaussian...")
-        # calculate the number of jobs per CPU
-        num_jobs = math.ceil(self.norm_stamps.shape[0] / cpu_count())
-        nstamps_chunks = [self.norm_stamps[x:x+num_jobs] for x in range(0, self.norm_stamps.shape[0], num_jobs)]
-
-        # define return values from each processor
-        gauss_amp = Manager()
-        gauss_r = Manager()
-        amp_dict = gauss_amp.dict()
-        r_dict = gauss_r.dict()
-        jobs = []
-        for i in range(cpu_count()):
-            p = Process(target=chunk_fit, args=(i,nstamps_chunks[i],amp_dict,r_dict))
-            jobs.append(p)
-            p.start()
-
-        for proc in jobs:
-            proc.join()
-
-        g_amp, g_r = [], []
-        for i in range(cpu_count()):
-            g_amp += amp_dict[i]
-            g_r += r_dict[i]
-        
-        # best fit gaussian amplitude of the detection
-        self.X['gauss_amp'] = g_amp
-        # R-squared statistic of the best fit gaussian
-        self.X['gauss_R'] = g_r
-        # sum of the absolute pixel values over the entire stamp
-        self.X['abs_pv'] = np.nansum(np.abs(self.norm_stamps.reshape(-1,441)), axis=1)
-        # join X into detection table
-        self.detab = self.detab.join(self.X)
-        self.X_col = ['b_image','nmask','n3sig7','gauss_amp','gauss_R','abs_pv']
-        FitsOp(self.filename, '_'.join([self.image_type, 'DETAB']), self.detab, mode='update')
-
-    def make_PCA(self):
-        if not 'norm_stamps' in dir(self):
-            # data cleaning
-            self.data_cleaning()
-            # normalize the stamp
-            self.normalize_stamps()
-        # load trained PCA and KBest
-        pca = pickle.load(open(getattr(config, 'pca_path'), 'rb'))
-        pca_col = ['pca{}'.format(i) for i in range(1,pca.components_.shape[0]+1)]
-        try:
-            self.detab.drop(columns=pca_col, inplace=True)
-        except:
-            pass
-
-        df = pd.DataFrame(self.norm_stamps.reshape(-1,441))
-        pca_X = df.copy()
-        # PCA tranformation to stamps
-        pca_X = pca.transform(pca_X)
-        print("Adding best PCA features into {}[{}_DETAB]".format(self.filename, self.image_type))
-        self.pca_X = pd.DataFrame(pca_X, columns=pca_col)
-
-        self.detab = self.detab.join(self.pca_X)
-
-        FitsOp(self.filename, '_'.join([self.image_type, 'DETAB']), self.detab, mode='update')
-
-
-    def store_stamps(self):
-        df = pd.DataFrame(self.norm_stamps.reshape(-1,441))
-        FitsOp(self.filename, '_'.join([self.image_type, 'STAMPS']), df, mode='append')
 
 class CalcALL():
     def __init__(self, filename):
@@ -331,11 +194,15 @@ class CalcALL():
             'datapath': pkg_resources.resource_filename('gTranRec', 'data'),
         }
 
-    def stamping(self):
+    def stamping(self, image_type='difference'):
         # get the coordinates for all detections on the difference image
-        
-        self.stamps =  np.array([Cutout2D(self.diffimg, (self.diffphoto.iloc[i]['x']-1, self.diffphoto.iloc[i]['y']-1), 
-                        (21, 21), mode='partial').data.reshape((21, 21)) for i in np.arange(self.diffphoto.shape[0])])
+        if image_type=='difference':
+            self.stamps =  np.array([Cutout2D(self.diffimg, (self.diffphoto.iloc[i]['x']-1, self.diffphoto.iloc[i]['y']-1), 
+                            (21, 21), mode='partial').data.reshape((21, 21)) for i in np.arange(self.diffphoto.shape[0])])
+        elif image_type=='science':
+            self.stamps =  np.array([Cutout2D(self.sciimg, (self.sciphoto.iloc[i]['x']-1, self.sciphoto.iloc[i]['y']-1), 
+                            (21, 21), mode='partial').data.reshape((21, 21)) for i in np.arange(self.sciphoto.shape[0])])
+
     def cleaning(self):
         print("Data cleaning...")
         self.stamps = self.stamps.reshape(-1, 441)
@@ -343,7 +210,7 @@ class CalcALL():
         self.stamps[self.stamps == 0] = np.nan
         # calculate the median noise level for each row (detection)
         row_median = np.nanmedian(self.stamps, axis=1)
-        #Find indicies that you need to replace
+        # find indicies that you need to replace
         inds = np.where(np.isnan(self.stamps))
         # replace all NaN by the detection median
         self.stamps[inds] = np.take(row_median, inds[0])
@@ -521,14 +388,56 @@ class CalcALL():
 
 
         FitsOp(self.filename, 'PHOTOMETRY_DIFF', self.diffphoto, mode='update')
-
-
-
-
+    
+    def save_features(self, image_type):
         
+        # load all useful tables
+        self.diffphoto = fits2df(self.filename, self.parameters['diffphoto'])
+        self.sciphoto = fits2df(self.filename, self.parameters['sciphoto'])
 
+        # load difference images
+        self.sciimg = getdata(self.filename, self.parameters['sciimage'])
+        self.diffimg = getdata(self.filename, self.parameters['diffimage'])
+        
+        # make stamp for each detections on the difference image
+        self.stamping(image_type=image_type)
+        # define feature table
+        self.X = pd.DataFrame()
+        self.X['b_image'] = self.sciphoto['B_IMAGE']
 
+        # create features
+        self.X['nmask'] = np.nansum(self.stamps[:,21//2-3:21//2+4, 21//2-3:21//2+4].reshape(-1,49)==0, axis=1)
+        self.X['nmask'] = self.X['nmask'] // 10
 
+        # data cleaning
+        self.cleaning()
 
+        # normalize the stamps
+        self.normalize_stamps()
+
+        # create features
+        self.X['n3sig7'] = self.calc_n3sig7()
+        self.X['abs_pv'] = np.nansum(np.abs(self.norm_stamps.reshape(-1, 441)), axis=1)
+
+        # fitting gaussian to stamps
+        g_amp, g_r = self.calc_gauss()
+
+        # best fit gaussian amplitude of the detection
+        self.X['gauss_amp'] = g_amp
+
+        # R-squared statistic of the best fit gaussian
+        self.X['gauss_R'] = g_r
+
+        if image_type=='real':
+            new_photo = self.sciphoto.join(self.X)
+        elif image_type=='difference':
+            new_photo = self.diffphoto.join(self.X)
+        
+        new_photo.drop(columns=new_photo.columns[new_photo.dtypes=='object'], inplace=True)
+
+        if image_type=='real':
+            FitsOp(self.filename, 'PHOTOMETRY', new_photo, mode='update')
+        elif image_type=='difference':
+            FitsOp(self.filename, 'PHOTOMETRY_DIFF', new_photo, mode='update')
 
 
