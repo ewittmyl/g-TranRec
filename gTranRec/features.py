@@ -224,13 +224,8 @@ class CalcALL():
         # calculate |p-med(p)|/sigma
         s2n = np.abs(diff)/np.repeat(np.std(flat_stamps, axis=1), 441).reshape((flat_stamps.shape[0], 441))
         self.norm_stamps = np.sign(diff)*np.log10(1+s2n)
-        # calculate the median noise level for each row (detection)
-        row_median = np.nanmedian(self.norm_stamps, axis=1)
-        # find indicies that you need to replace
-        inds = np.where(np.isnan(self.norm_stamps))
-        # replace all NaN by the detection median
-        self.norm_stamps[inds] = np.take(row_median, inds[0])
-        
+        self.norm_stamps = np.nan_to_num(self.norm_stamps)
+
         self.norm_stamps = self.norm_stamps.reshape(-1, 21, 21)
 
     def calc_n3sig7(self):
