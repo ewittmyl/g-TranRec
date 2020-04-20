@@ -277,7 +277,7 @@ class CalcALL():
 
     def scidiff_offset(self):
         input_param = {
-            'n_sig': 2.5, 
+            'n_sig': 2, 
             'ang_sol': 1.24,
         }
         real_df = self.diffphoto[self.diffphoto.gtr_score > self.thresh]
@@ -298,7 +298,7 @@ class CalcALL():
 
     def calc_weight(self):
         input_param = {
-            'n_sig': 2.5, 
+            'n_sig': 3, 
             'ang_sol': 1.24,
         }
         sig = np.mean(self.sciphoto['FWHM_IMAGE']) * input_param['ang_sol']
