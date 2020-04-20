@@ -277,7 +277,7 @@ class CalcALL():
 
     def scidiff_offset(self):
         input_param = {
-            'n_sig': 1, 
+            'n_sig': 2.5, 
             'ang_sol': 1.24,
         }
         real_df = self.diffphoto[self.diffphoto.gtr_score > self.thresh]
@@ -357,7 +357,7 @@ class CalcALL():
 
         self.X = self.X.join(self.PCA_transform())
 
-        col = ['pca1', 'pca2', 'pca3', 'pca4', 'pca5', 'pca6', 'pca7', 'b_image',
+        col = ['pca1', 'pca2', 'pca3', 'pca4', 'pca5', 'pca6', 'b_image',
                 'nmask', 'n3sig7', 'gauss_amp', 'gauss_R', 'abs_pv']
 
         self.X = self.X[col]
