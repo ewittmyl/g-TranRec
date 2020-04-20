@@ -68,7 +68,7 @@ def PCA_fit(cov_lo=0.01):
 
 def X_validation(model, X_train, y_train, cv=5):
 
-    X_col = ['pca1', 'pca2', 'pca3', 'pca4', 'pca5', 'pca6', 'pca7', 'b_image',
+    X_col = ['pca1', 'pca2', 'pca3', 'pca4', 'pca5', 'pca6',  'b_image',
             'nmask', 'n3sig7', 'gauss_amp', 'gauss_R', 'abs_pv']
     # make sure the training set has the correct format
     X_train = X_train[X_col]
@@ -111,7 +111,7 @@ def X_validation(model, X_train, y_train, cv=5):
     return mean_train_acc, std_train_acc, mean_val_acc, std_val_acc
 
 def RF_GridSearch(params, X_train, y_train):
-    X_col = ['pca1', 'pca2', 'pca3', 'pca4', 'pca5', 'pca6', 'pca7', 'b_image',
+    X_col = ['pca1', 'pca2', 'pca3', 'pca4', 'pca5', 'pca6', 'b_image',
             'nmask', 'n3sig7', 'gauss_amp', 'gauss_R', 'abs_pv']
     # make sure the training set has the correct format
     X_train = X_train[X_col]
@@ -151,7 +151,7 @@ def RF_GridSearch(params, X_train, y_train):
 
 def CalcGTR(filename, model='RF'):
     df = fits2df(filename, 'DIFFERENCE_DETAB')
-    col = ['pca1', 'pca2', 'pca3', 'pca4', 'pca5', 'pca6', 'pca7', 'b_image',
+    col = ['pca1', 'pca2', 'pca3', 'pca4', 'pca5', 'pca6','b_image',
             'nmask', 'n3sig7', 'gauss_amp', 'gauss_R', 'abs_pv']
     X = df[col]
 
