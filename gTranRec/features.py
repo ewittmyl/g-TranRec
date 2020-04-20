@@ -298,7 +298,7 @@ class CalcALL():
 
     def calc_weight(self):
         input_param = {
-            'n_sig': 4, 
+            'n_sig': 3, 
             'ang_sol': 1.24,
         }
         sig = np.mean(self.sciphoto['FWHM_IMAGE']) * input_param['ang_sol']
