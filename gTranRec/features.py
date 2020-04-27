@@ -224,7 +224,7 @@ class CalcALL():
         # calculate |p-med(p)|/sigma
         s2n = np.abs(diff)/np.repeat(np.std(flat_stamps, axis=1), 441).reshape((flat_stamps.shape[0], 441))
         self.norm_stamps = np.sign(diff)*np.log10(1+s2n)
-        self.norm_stamps = np.nan_to_num(self.norm_stamps)
+        self.norm_stamps = np.nan_to_num(self.norm_stamps, nan=1e-5)
 
         self.norm_stamps = self.norm_stamps.reshape(-1, 21, 21)
 
