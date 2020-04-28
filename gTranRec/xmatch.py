@@ -16,7 +16,7 @@ def XmatchGLADE(detab, glade_df, GTR_thresh=0.5):
     # create prefix for GLADE table columns
     glade_df.columns = 'GLADE_'+glade_df.columns
     
-    det_c = SkyCoord(ra=(real_df['ra']*u.degree).values, dec=(real_df['dec']*u.degree).values)
+    det_c = SkyCoord(ra=(real_df['ra'].values*u.degree), dec=(real_df['dec'].values*u.degree))
     glade_c = SkyCoord(ra=(glade_df['GLADE_RA']*u.degree).values, dec=(glade_df['GLADE_dec']*u.degree).values)
 
     idx, d2d, _ = det_c.match_to_catalog_sky(glade_c)
@@ -72,7 +72,7 @@ def mp_check(filename, detab, GTR_thresh=0.5):
         mp_table = mpc.table[mp_col]
 
         # create list of coordinates for candidates on difference image
-        det_c = SkyCoord(ra=(real_df['ra']*u.degree).values, dec=(real_df['dec']*u.degree).values)
+        det_c = SkyCoord(ra=(real_df['ra'].values*u.degree), dec=(real_df['dec'].values*u.degree))
 
         # create list of coordinates for mp on science image
         mp_coord = SkyCoord(ra=(mp_table['RA_deg']*u.degree).values, dec=(mp_table['Dec_deg']*u.degree).values)
