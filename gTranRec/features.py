@@ -248,8 +248,9 @@ class CalcALL():
         amp_dict = gauss_amp.dict()
         r_dict = gauss_r.dict()
         jobs = []
+        print(cpu_count(), len(nstamps_chunks))
         for i in range(cpu_count()):
-            print(i, nstamps_chunks[i].shape)
+            # print(i, nstamps_chunks[i].shape)
             p = Process(target=chunk_fit, args=(i,nstamps_chunks[i],amp_dict,r_dict))
             jobs.append(p)
             p.start()
