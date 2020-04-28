@@ -257,7 +257,7 @@ class CalcALL():
             proc.join()
 
         g_amp, g_r = [], []
-        for i in range(cpu_count()):
+        for i in range(len(nstamps_chunks)):
             g_amp += amp_dict[i]
             g_r += r_dict[i]
 
