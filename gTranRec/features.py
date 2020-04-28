@@ -378,16 +378,16 @@ class CalcALL():
         self.calc_weight()
         self.diffphoto['gtr_wscore'] = self.diffphoto.weight * self.diffphoto.gtr_score
 
-        self.diffphoto = mp_check(self.filename, self.diffphoto, self.thresh)
+        # self.diffphoto = mp_check(self.filename, self.diffphoto, self.thresh)
 
-        try:
-            radius = ( self.fwhm * 1.24 ) / 2
-            xmatch_df = astroquery_xmatch(self.diffphoto, r=radius, GTR_thresh=self.thresh)
-            self.diffphoto = xmatch_df
-        except:
-            print("Cannot X-match with NED and SIMBAD catalog...")
+        # try:
+        #     radius = ( self.fwhm * 1.24 ) / 2
+        #     xmatch_df = astroquery_xmatch(self.diffphoto, r=radius, GTR_thresh=self.thresh)
+        #     self.diffphoto = xmatch_df
+        # except:
+        #     print("Cannot X-match with NED and SIMBAD catalog...")
             
-        self.diffphoto.drop(columns=self.diffphoto.columns[self.diffphoto.dtypes=='object'], inplace=True)
+        # self.diffphoto.drop(columns=self.diffphoto.columns[self.diffphoto.dtypes=='object'], inplace=True)
 
 
         FitsOp(self.filename, 'PHOTOMETRY_DIFF', self.diffphoto, mode='update')
