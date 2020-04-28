@@ -285,7 +285,7 @@ class CalcALL():
         bogus_df = self.diffphoto[self.diffphoto.gtr_score < self.thresh]
 
         diff_det_coor = SkyCoord(ra=(real_df['ra']*u.degree).values, dec=(real_df['dec']*u.degree).values)
-        sci_det_coor = SkyCoord(ra=(self.sciphoto['ra']*u.degree).values, dec=(self.sciphoto['dec']*u.degree).values)
+        sci_det_coor = SkyCoord(ra=(self.sciphoto['ra'].values*u.degree), dec=(self.sciphoto['dec'].values*u.degree))
         _, d2d, _ = diff_det_coor.match_to_catalog_sky(sci_det_coor)
         d2d = Angle(d2d, u.arcsec).arcsec
         real_df['scidiff_offset'] = d2d
