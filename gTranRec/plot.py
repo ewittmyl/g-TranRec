@@ -12,15 +12,15 @@ from .image_process import fits2df
 
 def generate_report(filename, output=None, thresh=0.5, near_galaxy=True, xmatch_filter=True):
         detab = fits2df(filename, 'PHOTOMETRY_DIFF')
-        candidates = detab[detab.gtr_wscore>thresh]
-        candidates = candidates.sort_values(by='gtr_wscore', ascending=False)
+        candidates = detab[detab.gtr_wcnn>thresh]
+        candidates = candidates.sort_values(by='gtr_wcnn', ascending=False)
         candidates = round(candidates, 5)
 
         pix_val = []
         pix_val.append(getdata(filename, 'IMAGE'))
         pix_val.append(getdata(filename, 'TEMPLATE'))
         pix_val.append(getdata(filename, 'DIFFERENCE'))
-        col = ['ra','dec','X_IMAGE','Y_IMAGE', 'gtr_wscore','mag']
+        col = ['ra','dec','X_IMAGE','Y_IMAGE', 'gtr_wcnn','mag']
 
         if 'mp_offset' in candidates.columns:
                 col += ['mp_offset']
@@ -68,11 +68,15 @@ def generate_report(filename, output=None, thresh=0.5, near_galaxy=True, xmatch_
                         ax.axvline(75, ymin=0.55, ymax=0.6,color='red', linewidth=2)
                 
                         if i == 0:
-                                plt.title("{}\nRA: {}\nDec: {}\nScore: {}".format(filename, candidate[1]['ra'], candidate[1]['dec'], candidate[1]['gtr_wscore']), loc='left', fontsize=10)
+                                plt.title("{}\nRA: {}\nDec: {}\nScore: {}".format(filename, candidate[1]['ra'], candidate[1]['dec'], candidate[1]['gtr_wcnn']), loc='left', fontsize=10)
                         if i == 1:
                                 plt.title("Magnitude: {}".format(candidate[1]['mag']), loc='left', fontsize=10)
                                 if 'mp_offset' in candidates.columns:
-                                        plt.title("Magnitude: {}\nMinor Planet: {}''\nXmatch Label: {}".format(candidate[1]['mag'], candidate[1]['mp_offset'], candidate[1]['xmatch_obj']), loc='left', fontsize=10)
+                                        if 'xmatch_obj' in candidates.columns:
+                                                plt.title("Magnitude: {}\nMinor Planet: {}''\nXmatch Label: {}".format(candidate[1]['mag'], candidate[1]['mp_offset'], candidate[1]['xmatch_obj']), loc='left', fontsize=10)
+                                        else:
+                                                plt.title("Magnitude: {}\nMinor Planet: {}''".format(candidate[1]['mag'], candidate[1]['mp_offset']), loc='left', fontsize=10)
+
                         if i == 2:
                                 if 'GLADE_offset' in candidates.columns:
                                         plt.title("GLADE galaxy\n{}'', {}Mpc\nRA, Dec: {}, {}".format(candidate[1]['GLADE_offset'], candidate[1]['GLADE_dist'], candidate[1]['GLADE_RA'], candidate[1]['GLADE_dec']), loc='left', fontsize=10)          

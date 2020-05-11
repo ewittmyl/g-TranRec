@@ -8,11 +8,12 @@ from . import config
 from astroquery.ned import Ned
 from astroquery.simbad import Simbad
 from astroquery.heasarc import Heasarc
+from .database import GladeDB
 
 
 def XmatchGLADE(detab, glade_df, GTR_thresh=0.5):
-    real_df = detab[detab.gtr_score > GTR_thresh]
-    bogus_df = detab[detab.gtr_score < GTR_thresh]
+    real_df = detab[detab.gtr_wcnn > GTR_thresh]
+    bogus_df = detab[detab.gtr_wcnn < GTR_thresh]
     # create prefix for GLADE table columns
     glade_df.columns = 'GLADE_'+glade_df.columns
     
@@ -59,8 +60,8 @@ def mp_check(filename, detab, GTR_thresh=0.5):
 
 
     # read CANDIDATES_LIST
-    real_df = detab[detab.gtr_score > GTR_thresh]
-    bogus_df = detab[detab.gtr_score < GTR_thresh]
+    real_df = detab[detab.gtr_wcnn > GTR_thresh]
+    bogus_df = detab[detab.gtr_wcnn < GTR_thresh]
 
     # image_search with MPChecker
     mpc.image_search(filename, imagetype='IMAGE')
@@ -93,8 +94,8 @@ def mp_check(filename, detab, GTR_thresh=0.5):
     return detab
 
 def astroquery_xmatch(detab, r=5, GTR_thresh=0.5):
-    real_df = detab[detab.gtr_wscore > GTR_thresh]
-    bogus_df = detab[detab.gtr_wscore < GTR_thresh]
+    real_df = detab[detab.gtr_wcnn > GTR_thresh]
+    bogus_df = detab[detab.gtr_wcnn < GTR_thresh]
     
     coord = SkyCoord(ra=real_df.ra.values, dec=real_df.dec.values, unit=(u.degree, u.degree), frame='icrs')
     r_q = u.Quantity(r, u.arcsec)
@@ -148,3 +149,25 @@ def astroquery_xmatch(detab, r=5, GTR_thresh=0.5):
     detab = real_df.append(bogus_df, ignore_index = True)
     
     return detab
+
+def all_Xmatch(filename, diffphoto, thresh=0.69):
+    # create glade df for the given image
+    glade = GladeDB.image_search(filename)
+    # add GLADE information to diffphoto
+    diffphoto = XmatchGLADE(diffphoto, glade.copy(), thresh)
+    # MP check
+    diffphoto = mp_check(filename, diffphoto, thresh)
+    # load sciphoto from FITS
+    sciphoto = fits2df(filename, 'PHOTOMETRY')
+    # get searching region with median FWHM
+    med_fwhm = sciphoto.FWHM_IMAGE.median()
+    # try:
+    #     # define searching cone size
+    #     radius = ( med_fwhm * 1.24 ) / 2
+    #     xmatch_df = astroquery_xmatch(diffphoto, r=radius, GTR_thresh=thresh)
+    #     diffphoto = xmatch_df
+    # except:
+    #     print("Cannot X-match with NED and SIMBAD catalog...")
+
+    return diffphoto
+

@@ -39,7 +39,8 @@ class GladeDB():
             'B_err','B_Abs','J','J_err','H','H_err',
             'K','K_err','flag2','flag3']
         print("Loading GLADE catalog...")
-        catalog = pd.DataFrame(np.genfromtxt(filepath), columns=col)
+        catalog = pd.read_csv(filepath, sep=" ", header=None)
+        catalog.columns = col
         useful_col = ['RA','dec','dist','dist_err','z','B','B_err',
                       'B_Abs','J','J_err','H','H_err','K','K_err']
         return catalog[useful_col]
