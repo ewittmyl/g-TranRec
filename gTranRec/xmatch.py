@@ -161,13 +161,13 @@ def all_Xmatch(filename, diffphoto, thresh=0.69):
     sciphoto = fits2df(filename, 'PHOTOMETRY')
     # get searching region with median FWHM
     med_fwhm = sciphoto.FWHM_IMAGE.median()
-    # try:
-    #     # define searching cone size
-    #     radius = ( med_fwhm * 1.24 ) / 2
-    #     xmatch_df = astroquery_xmatch(diffphoto, r=radius, GTR_thresh=thresh)
-    #     diffphoto = xmatch_df
-    # except:
-    #     print("Cannot X-match with NED and SIMBAD catalog...")
+    try:
+        # define searching cone size
+        radius = ( med_fwhm * 1.24 ) / 2
+        xmatch_df = astroquery_xmatch(diffphoto, r=radius, GTR_thresh=thresh)
+        diffphoto = xmatch_df
+    except:
+        print("Cannot X-match with NED and SIMBAD catalog...")
 
     return diffphoto
 
