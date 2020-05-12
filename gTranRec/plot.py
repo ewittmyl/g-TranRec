@@ -87,11 +87,10 @@ def generate_report(filename, output=None, thresh=0.5, near_galaxy=True, xmatch_
                 j += 1
         ##############################################
         pdf = FPDF(orientation = 'L')
-        stamps_fn.sort()
-        for i, thumbnail in enumerate(stamps_fn):
+        for i in range(len(stamps_fn)):
                 print("\rProcessing: {}/{}".format(i+1, len(stamps_fn)), end="\r")
                 pdf.add_page()
-                pdf.image(thumbnail)
+                pdf.image(filename.split(".")[0] + '_' + str(i) + '.png')
         if output is None:
                 report_fn = filename.split(".")[0] + '_report.pdf'
         else:
