@@ -13,8 +13,8 @@ from .image_process import fits2df
 def generate_report(filename, output=None, thresh=0.5, near_galaxy=True, xmatch_filter=True):
         detab = fits2df(filename, 'PHOTOMETRY_DIFF')
         candidates = detab[detab.gtr_wcnn>thresh]
-        candidates = candidates.sort_values(by='gtr_wcnn', ascending=False)
         candidates = round(candidates, 5)
+        candidates = candidates.sort_values(by='gtr_wcnn', ascending=False)
 
         pix_val = []
         pix_val.append(getdata(filename, 'IMAGE'))
