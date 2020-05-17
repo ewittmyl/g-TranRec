@@ -6,6 +6,7 @@ import pandas as pd
 from .cnn import CNN
 from .weighting import Weighting
 from .xmatch import all_Xmatch
+import os
 
 def add_score(filename):
     param = {
