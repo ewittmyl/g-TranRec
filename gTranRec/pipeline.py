@@ -34,7 +34,7 @@ def main(science, template=None, thresh=0.7, astroquery=True, near_galaxy=False,
     if not template:
         diffphoto = add_score(science)
         # create glade df for the given image
-        glade = GladeDB.image_search(filename)
+        glade = GladeDB.image_search(science)
         # add GLADE information to diffphoto
         diffphoto = XmatchGLADE(diffphoto, glade.copy(), thresh)
         if astroquery:
@@ -55,7 +55,7 @@ def main(science, template=None, thresh=0.7, astroquery=True, near_galaxy=False,
         SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         diffphoto = add_score(science)
         # create glade df for the given image
-        glade = GladeDB.image_search(filename)
+        glade = GladeDB.image_search(science)
         # add GLADE information to diffphoto
         diffphoto = XmatchGLADE(diffphoto, glade.copy(), thresh)
         if astroquery:
