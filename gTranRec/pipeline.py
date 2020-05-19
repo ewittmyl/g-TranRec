@@ -5,8 +5,9 @@ from .plot import generate_report
 import pandas as pd
 from .cnn import CNN
 from .weighting import Weighting
-from .xmatch import all_Xmatch
+from .xmatch import all_Xmatch, XmatchGLADE
 import os
+from .database import GladeDB
 
 def add_score(filename):
     param = {
@@ -23,7 +24,7 @@ def add_score(filename):
 
     return w.diffphoto
 
-def main(science, template=None, thresh=0.69, near_galaxy=False, report=False):
+def main(science, template=None, thresh=0.7, astroquery=True, near_galaxy=False, report=False):
     # start timer
     start = time.time()
 
@@ -32,7 +33,12 @@ def main(science, template=None, thresh=0.69, near_galaxy=False, report=False):
 
     if not template:
         diffphoto = add_score(science)
-        diffphoto = all_Xmatch(science, diffphoto, thresh=thresh)
+        # create glade df for the given image
+        glade = GladeDB.image_search(filename)
+        # add GLADE information to diffphoto
+        diffphoto = XmatchGLADE(diffphoto, glade.copy(), thresh)
+        if astroquery:
+            diffphoto = all_Xmatch(science, diffphoto, thresh=thresh)
         diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)
 
         FitsOp(science, "PHOTOMETRY_DIFF", diffphoto, mode="update")
@@ -48,7 +54,12 @@ def main(science, template=None, thresh=0.69, near_galaxy=False, report=False):
         SExtractor(science, image_ext='IMAGE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         SExtractor(science, image_ext='DIFFERENCE').run(thresh=2, deblend_nthresh=32, deblend_mincont=0.005)
         diffphoto = add_score(science)
-        diffphoto = all_Xmatch(science, diffphoto, thresh=thresh)
+        # create glade df for the given image
+        glade = GladeDB.image_search(filename)
+        # add GLADE information to diffphoto
+        diffphoto = XmatchGLADE(diffphoto, glade.copy(), thresh)
+        if astroquery:
+            diffphoto = all_Xmatch(science, diffphoto, thresh=thresh)
         diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)
         FitsOp(science, "PHOTOMETRY_DIFF", diffphoto, mode="update")
         if report:

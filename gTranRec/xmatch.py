@@ -150,11 +150,7 @@ def astroquery_xmatch(detab, r=5, GTR_thresh=0.5):
     
     return detab
 
-def all_Xmatch(filename, diffphoto, thresh=0.69):
-    # create glade df for the given image
-    glade = GladeDB.image_search(filename)
-    # add GLADE information to diffphoto
-    diffphoto = XmatchGLADE(diffphoto, glade.copy(), thresh)
+def all_Xmatch(filename, diffphoto, thresh=0.7):
     # MP check
     diffphoto = mp_check(filename, diffphoto, thresh)
     # load sciphoto from FITS
