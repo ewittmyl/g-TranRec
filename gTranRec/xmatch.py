@@ -11,9 +11,9 @@ from astroquery.heasarc import Heasarc
 from .database import GladeDB
 
 
-def XmatchGLADE(detab, glade_df, GTR_thresh=0.5):
-    real_df = detab[detab.gtr_wcnn > GTR_thresh]
-    bogus_df = detab[detab.gtr_wcnn < GTR_thresh]
+def XmatchGLADE(detab, glade_df, GTR_thresh=0.85):
+    real_df = detab[detab.gtr_cnn > GTR_thresh]
+    bogus_df = detab[detab.gtr_cnn < GTR_thresh]
     # create prefix for GLADE table columns
     glade_df.columns = 'GLADE_'+glade_df.columns
     
@@ -60,8 +60,8 @@ def mp_check(filename, detab, GTR_thresh=0.5):
 
 
     # read CANDIDATES_LIST
-    real_df = detab[detab.gtr_wcnn > GTR_thresh]
-    bogus_df = detab[detab.gtr_wcnn < GTR_thresh]
+    real_df = detab[detab.gtr_cnn > GTR_thresh]
+    bogus_df = detab[detab.gtr_cnn < GTR_thresh]
 
     # image_search with MPChecker
     mpc.image_search(filename, imagetype='IMAGE')
@@ -94,8 +94,8 @@ def mp_check(filename, detab, GTR_thresh=0.5):
     return detab
 
 def astroquery_xmatch(detab, r=5, GTR_thresh=0.5):
-    real_df = detab[detab.gtr_wcnn > GTR_thresh]
-    bogus_df = detab[detab.gtr_wcnn < GTR_thresh]
+    real_df = detab[detab.gtr_cnn > GTR_thresh]
+    bogus_df = detab[detab.gtr_cnn < GTR_thresh]
     
     coord = SkyCoord(ra=real_df.ra.values, dec=real_df.dec.values, unit=(u.degree, u.degree), frame='icrs')
     r_q = u.Quantity(r, u.arcsec)
