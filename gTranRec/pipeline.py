@@ -24,7 +24,7 @@ def add_score(filename):
 
     return w.diffphoto
 
-def main(science, template=None, thresh=0.7, astroquery=True, near_galaxy=False, report=False):
+def main(science, template=None, thresh=0.85, astroquery=True, near_galaxy=False, report=False):
     # start timer
     start = time.time()
 
