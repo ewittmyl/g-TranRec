@@ -93,7 +93,7 @@ def mp_check(filename, detab, GTR_thresh=0.85):
     
     return detab
 
-def contextual_check(detab, r=1, GTR_thresh=0.85):
+def contextual_check(detab, r=5, GTR_thresh=0.85):
     # split detection table into real and bogus subset
     real_df = detab[detab.gtr_cnn > GTR_thresh]
     bogus_df = detab[detab.gtr_cnn < GTR_thresh]
