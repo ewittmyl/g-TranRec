@@ -132,10 +132,9 @@ def cat_search(ra_in, dec_in, srad):
 				# select useful col only
 				itemframe = itemframe[useful_col]
 				all_items_df = pd.concat([all_items_df, itemframe], axis=0)
-				print(all_items_df)
 				if itemframe.offset[0] < 0.5:
 					break
 	if all_items_df.empty:
-		return None
+		return all_items_df
 	else:
 		return all_items_df.sort_values('offset', ascending=1).iloc[[0]]
