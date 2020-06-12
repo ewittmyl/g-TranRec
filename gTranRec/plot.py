@@ -36,7 +36,7 @@ def generate_report(filename, output=None, thresh=0.85, near_galaxy=True, xmatch
         if near_galaxy:
                 candidates = candidates[candidates.GLADE_offset<30]
         if xmatch_filter and ('known_off' in candidates.columns):
-                candidates = candidates[candidates.known_off>1]
+                candidates = candidates[np.isnan(candidates.known_off)]
         interval = ZScaleInterval()
         j = 0
         stamps_fn = []
