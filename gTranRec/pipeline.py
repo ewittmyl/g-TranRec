@@ -37,7 +37,7 @@ def main(science, template=None, thresh=0.85, catparse=True, near_galaxy=False, 
         glade = GladeDB.image_search(science)
         # add GLADE information to diffphoto
         diffphoto = XmatchGLADE(diffphoto, glade.copy(), thresh)
-        diffphoto = all_Xmatch(science, diffphoto, thresh=thresh, astroquery=astroquery)
+        diffphoto = all_Xmatch(science, diffphoto, thresh=thresh, catparse=catparse)
         diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)
 
         FitsOp(science, "PHOTOMETRY_DIFF", diffphoto, mode="update")

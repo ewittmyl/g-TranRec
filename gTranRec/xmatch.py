@@ -103,7 +103,9 @@ def contextual_check(detab, r=1, GTR_thresh=0.85):
     known_off = []
     known_df = pd.DataFrame()
 
+    i = 0
     for c in zip(real_df.ra.values, real_df.dec.values):
+        print("\rContextual checking: {}/{}".format(i+1, real_df.shape[0]), end="\r")
         check_df = cat_search(c[0], c[1], r)
         if check_df.shape[0] > 0:
             known_ra.append(check_df.ra.values[0])
@@ -113,6 +115,8 @@ def contextual_check(detab, r=1, GTR_thresh=0.85):
             known_ra.append(np.nan)
             known_dec.append(np.nan)
             known_off.append(np.nan)
+
+        i += 1
     
     real_df['known_ra'] = known_ra
     real_df['known_dec'] = known_ra
