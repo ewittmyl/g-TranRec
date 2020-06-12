@@ -17,7 +17,7 @@ from .gaussian import chunk_fit
 from multiprocessing import Process, cpu_count, Manager
 import math
 from .postprocess import CalcWeight
-from .xmatch import XmatchGLADE, mp_check, astroquery_xmatch
+from .xmatch import XmatchGLADE, mp_check
 import pkg_resources
 from .database import GladeDB
 
