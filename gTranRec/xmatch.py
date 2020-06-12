@@ -119,8 +119,8 @@ def contextual_check(detab, r=1, GTR_thresh=0.85):
         i += 1
     
     real_df['known_ra'] = known_ra
-    real_df['known_dec'] = known_ra
-    real_df['known_off'] = known_ra
+    real_df['known_dec'] = known_dec
+    real_df['known_off'] = known_off
 
     bogus_df['known_ra'] = np.nan
     bogus_df['known_dec'] = np.nan

@@ -73,7 +73,7 @@ def generate_report(filename, output=None, thresh=0.85, near_galaxy=True, xmatch
                                 plt.title("Magnitude: {}".format(candidate[1]['mag']), loc='left', fontsize=10)
                                 if 'mp_offset' in candidates.columns:
                                         if 'known_ra' in candidates.columns:
-                                                plt.title("Magnitude: {}\nMinor Planet: {}''\nCotparse: {}, {}, {}".format(candidate[1]['mag'], candidate[1]['mp_offset'], candidate[1]['known_ra'], candidate[1]['known_dec'], candidate[1]['known_off']), loc='left', fontsize=10)
+                                                plt.title("Magnitude: {}\nMinor Planet: {}''\nCat off: {}".format(candidate[1]['mag'], candidate[1]['mp_offset'], candidate[1]['known_off']), loc='left', fontsize=10)
                                         else:
                                                 plt.title("Magnitude: {}\nMinor Planet: {}''".format(candidate[1]['mag'], candidate[1]['mp_offset']), loc='left', fontsize=10)
 
