@@ -132,8 +132,11 @@ def cat_search(ra_in, dec_in, srad):
 				# select useful col only
 				itemframe = itemframe[useful_col]
 				all_items_df = pd.concat([all_items_df, itemframe], axis=0)
-				if itemframe.offset[0] < 0.5:
-					break
+				try:
+					if itemframe.offset[0] < 0.5:
+						break
+				except:
+					itemframe
 	if all_items_df.empty:
 		return all_items_df
 	else:
