@@ -4,11 +4,11 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord, Distance
 import numpy as np
 import pandas as pd
-from . import config
 from astroquery.ned import Ned
 from astroquery.simbad import Simbad
 from astroquery.heasarc import Heasarc
 from .database import GladeDB
+from .catparser import cat_search
 
 
 def XmatchGLADE(detab, glade_df, GTR_thresh=0.85):
@@ -37,7 +37,7 @@ def XmatchGLADE(detab, glade_df, GTR_thresh=0.85):
 
     return detab
 
-def mp_check(filename, detab, GTR_thresh=0.5):
+def mp_check(filename, detab, GTR_thresh=0.85):
     """
     Cross-match with the Minor Planet Catalog within the FoV of 
     the image within a given region.
@@ -93,78 +93,48 @@ def mp_check(filename, detab, GTR_thresh=0.5):
     
     return detab
 
-def astroquery_xmatch(detab, r=5, GTR_thresh=0.5):
+def contextual_check(detab, r=1, GTR_thresh=0.85):
+    # split detection table into real and bogus subset
     real_df = detab[detab.gtr_cnn > GTR_thresh]
     bogus_df = detab[detab.gtr_cnn < GTR_thresh]
-    
-    coord = SkyCoord(ra=real_df.ra.values, dec=real_df.dec.values, unit=(u.degree, u.degree), frame='icrs')
-    r_q = u.Quantity(r, u.arcsec)
-    xmatch_obj = []
-    for i in range(real_df.shape[0]):
-        c = coord[i]
-        ra, dec = real_df.ra.values[i], real_df.dec.values[i]
-        print("\Xmatching with NED: {}/{}".format(i+1, real_df.shape[0]), end="\r")
-        j = 0
-        while j<5:
-            try:
-                ned_df = Ned.query_region(c, r_q)
-                break
-            except:
-                ned_df = None
-                j+=1
+    # define lists for information of the known objects
+    known_ra = []
+    known_dec = []
+    known_off = []
+    known_df = pd.DataFrame()
 
-            
-        if (len(ned_df) == 0) or (ned_df is None):
-            j = 0
-            print("\Xmatching with SIMBAD: {}/{}".format(i+1, real_df.shape[0]), end="\r")
-            while j<5:
-                try:
-                    simbad_df = Simbad.query_criteria('region(circle, gal, {0} {1:+f}, {2}s)'.format(ra, dec, r), otype='*')
-                    break
-                except:
-                    simbad_df = None
-                    j+=1
-            if simbad_df is None:
-                print("\Xmatching with GCVS: {}/{}".format(i+1, real_df.shape[0]), end="\r")
-                try:
-                    heasarc = Heasarc()
-                    gcvs_df = heasarc.query_region(c, mission='GCVS', radius='{} arcsec'.format(r))  
-                    if not len(gcvs_df) == 0:
-                        xmatch_obj.append(3)
-                except TypeError:
-                    xmatch_obj.append(0)
-            else:
-                xmatch_obj.append(2)
-            
+    for c in zip(real_df.ra.values, real_df.dec.values):
+        check_df = cat_search(c[0], c[1], r)
+        if check_df.shape[0] > 0:
+            known_ra.append(check_df.ra.values[0])
+            known_dec.append(check_df.dec.values[0])
+            known_off.append(check_df.offset.values[0])
         else:
-            ned_df.sort('Separation')
-            if 'G' in str(ned_df['Type'][0])[2:-1]:
-                xmatch_obj.append(0)
-            else:
-                xmatch_obj.append(1)
+            known_ra.append(np.nan)
+            known_dec.append(np.nan)
+            known_off.append(np.nan)
     
-    real_df['xmatch_obj'] = xmatch_obj
-    bogus_df['xmatch_obj'] = np.nan
-    
-    detab = real_df.append(bogus_df, ignore_index = True)
-    
-    return detab
+    real_df['known_ra'] = known_ra
+    real_df['known_dec'] = known_ra
+    real_df['known_off'] = known_ra
 
-def all_Xmatch(filename, diffphoto, thresh=0.85, astroquery=True):
+    bogus_df['known_ra'] = np.nan
+    bogus_df['known_dec'] = np.nan
+    bogus_df['known_off'] = np.nan    
+
+    detab = real_df.append(bogus_df, ignore_index = True)
+    return detab
+        
+
+def all_Xmatch(filename, diffphoto, thresh=0.85, catparse=True):
     # MP check
     diffphoto = mp_check(filename, diffphoto, thresh)
-    if astroquery:
+    if catparse:
         # load sciphoto from FITS
         sciphoto = fits2df(filename, 'PHOTOMETRY')
-        # get searching region with median FWHM
-        med_fwhm = sciphoto.FWHM_IMAGE.median()
-        try:
-            # define searching cone size
-            radius = ( med_fwhm * 1.24 ) / 2
-            xmatch_df = astroquery_xmatch(diffphoto, r=radius, GTR_thresh=thresh)
-            diffphoto = xmatch_df
-        except:
-            print("Cannot X-match with NED and SIMBAD catalog...")
+        diffphoto = contextual_check(diffphoto, GTR_thresh=thresh)
+        # except:
+        #     print("Cannot X-match with NED and SIMBAD catalog...")
 
     return diffphoto
 

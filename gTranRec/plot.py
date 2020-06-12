@@ -29,14 +29,14 @@ def generate_report(filename, output=None, thresh=0.85, near_galaxy=True, xmatch
                 col += ['GLADE_offset','GLADE_RA','GLADE_dec']
         if 'GLADE_dist' in candidates.columns:
                 col += ['GLADE_dist']
-        if 'xmatch_obj' in candidates.columns:
-                col += ['xmatch_obj']
+        if 'known_ra' in candidates.columns:
+                col += ['known_ra','known_dec','known_off']
 
         candidates = candidates[col]
         if near_galaxy:
                 candidates = candidates[candidates.GLADE_offset<30]
-        if xmatch_filter and ('xmatch_obj' in candidates.columns):
-                candidates = candidates[candidates.xmatch_obj==0]
+        if xmatch_filter and ('known_off' in candidates.columns):
+                candidates = candidates[candidates.known_off>1]
         interval = ZScaleInterval()
         j = 0
         stamps_fn = []
@@ -72,8 +72,8 @@ def generate_report(filename, output=None, thresh=0.85, near_galaxy=True, xmatch
                         if i == 1:
                                 plt.title("Magnitude: {}".format(candidate[1]['mag']), loc='left', fontsize=10)
                                 if 'mp_offset' in candidates.columns:
-                                        if 'xmatch_obj' in candidates.columns:
-                                                plt.title("Magnitude: {}\nMinor Planet: {}''\nXmatch Label: {}".format(candidate[1]['mag'], candidate[1]['mp_offset'], candidate[1]['xmatch_obj']), loc='left', fontsize=10)
+                                        if 'known_ra' in candidates.columns:
+                                                plt.title("Magnitude: {}\nMinor Planet: {}''\nCotparse: {}, {}, {}".format(candidate[1]['mag'], candidate[1]['mp_offset'], candidate[1]['known_ra'], candidate[1]['known_dec'], candidate[1]['known_off']), loc='left', fontsize=10)
                                         else:
                                                 plt.title("Magnitude: {}\nMinor Planet: {}''".format(candidate[1]['mag'], candidate[1]['mp_offset']), loc='left', fontsize=10)
 
