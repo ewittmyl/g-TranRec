@@ -55,6 +55,16 @@ def simbad_check(ra, dec, srad):
 				linelist = line.split("|")
 				out_table.append(linelist)
 
+	# convert simbad cross-matched table into dataframe
+	df = pd.DataFrame(out_table, columns=colcell)
+	# convert dtype of otype as string
+	df.otype = df.otype.astype('str')
+	df.otype = [d[1:-1] for d in df.otype.values]
+	# filter all galaxy in the table
+	df = df[df.otype!='Galaxy']
+	# redefine colcell and out_table
+	colcell = df.columns
+	out_table = df.values
 	# Return output, status flag indicating search success:
 	return colcell, colunits, out_table, True
 
@@ -78,9 +88,7 @@ def cat_search(ra_in, dec_in, srad):
 
 
 	# all catalogs used to check
-	all_catalogs = ['AAVSO_VSX', 'TMASS', 'APASS',
-								 'GAIADR1', 'GAIADR2', 'IPHAS', 'NEDz', 
-								 'IRACgc', 'UCAC4', 'WISE','simbad']
+	all_catalogs = ['AAVSO_VSX', 'TMASS', 'APASS', 'IPHAS', 'IRACgc', 'UCAC4', 'WISE','simbad']
 
 
 
