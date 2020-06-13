@@ -159,7 +159,7 @@ def cat_search(ra_in, dec_in, srad):
 	if all_items_df.empty:
 		return all_items_df
 	else:
-		if all_items_df[all_items_df['catname']=='simbad']['otype'] == 'Galaxy':
+		if 'Galaxy' in all_items_df[all_items_df['catname']=='simbad']['otype'].values:
 			return all_items_df[all_items_df['catname']=='simbad'].iloc[[0]]
 		else:
 			return all_items_df.sort_values('offset', ascending=1).iloc[[0]]
