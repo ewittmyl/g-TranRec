@@ -2,8 +2,8 @@ import pkg_resources
 import os
 
 
-sex_cmd = 'sextractor'
-# sex_cmd = 'sex'
+# sex_cmd = 'sextractor'
+sex_cmd = 'sex'
 
 user = 'travis'
 password = '19880830'
