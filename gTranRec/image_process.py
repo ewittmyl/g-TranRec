@@ -112,7 +112,7 @@ def template_align(science, template):
     try:
         hdu = 0
         # identify field stars to xmatch
-        identifications = alipy.ident.run(science, ali_img_list, hdu=hdu, visu=False)
+        identifications = alipy.ident.run(science, ali_img_list, hdu=hdu, visu=False, verbose=False)
 
         for id in identifications: # list of the same length as ali_img_list
             if id.ok == True: # i.e., if it worked
@@ -128,11 +128,11 @@ def template_align(science, template):
         # creating the aligned image
         output = '_'.join(['aligned', template])
         alipy.align.affineremap(template, id.trans,  
-                                outputshape, hdu=0, alifilepath=output)
+                                outputshape, hdu=0, alifilepath=output, verbose=False)
     except:
         hdu = 1
         # identify field stars to xmatch
-        identifications = alipy.ident.run(science, ali_img_list, hdu=hdu, visu=False)
+        identifications = alipy.ident.run(science, ali_img_list, hdu=hdu, visu=False, verbose=False)
 
         for id in identifications: # list of the same length as ali_img_list
             if id.ok == True: # i.e., if it worked
@@ -148,7 +148,7 @@ def template_align(science, template):
         # creating the aligned image
         output = '_'.join(['aligned', template])
         alipy.align.affineremap(template, id.trans,  
-                                outputshape, hdu=0, alifilepath=output)
+                                outputshape, hdu=0, alifilepath=output, verbose=False)
 
     print("Image Alignment completed. {} is created.".format(output))
     print("Copying science image to a new FITS...")
@@ -183,7 +183,7 @@ def image_subtract(science, aligned_template):
     print("Running {} - {}".format(science, aligned_template))
     output = '_'.join(['diff', science])
     try:
-        hpcmd = 'hotpants -inim ' + science + '[0] -tmplim ' + aligned_template + ' -outim ' + output + ' -tu 55000 -iu 55000 -tl 10 -il 10 -tg 1.3 -ig 1.3 -tr 10 -ir 10 -nrx 2 -nry 2 -fi 0 -n i -ko 2 -sconv -bgo 2 -v 0 -ng 3 6 1.428 4 2.855 2 5.710 -r 19.985 -rss 25.985'
+        hpcmd = 'hotpants -inim ' + science + '[0] -tmplim ' + aligned_template + ' -outim ' + output + ' -tu 55000 -iu 55000 -tl 10 -il 10 -tg 1.3 -ig 1.3 -tr 10 -ir 10 -nrx 2 -nry 2 -fi 0 -n i -ko 2 -sconv -bgo 2 -v 2 -ng 3 6 1.428 4 2.855 2 5.710 -r 19.985 -rss 25.985'
         os.system(hpcmd)
     except:
         # return error if no hotpants is found
