@@ -60,8 +60,16 @@ def simbad_check(ra, dec, srad):
 	# convert dtype of otype as string
 	df.otype = df.otype.astype('str')
 	df.otype = [d[1:-1] for d in df.otype.values]
-	# filter all galaxy in the table
-	df = df[df.otype!='Galaxy']
+
+	if 'Galaxy' in df.otype.values:
+		# only include galaxy if the crossmatch result contains galaxy
+		df = df[df.otype=='Galaxy'].sort_values('offset', ascending=1)
+		# galaxy flag
+		df.offset = 777
+	else:
+		# perform normal sorting if no galaxy in the crossmatch table
+		df = df.sort_values('offset', ascending=1)
+
 	# redefine colcell and out_table
 	colcell = df.columns
 	out_table = df.values
@@ -88,12 +96,12 @@ def cat_search(ra_in, dec_in, srad):
 
 
 	# all catalogs used to check
-	all_catalogs = ['AAVSO_VSX', 'TMASS', 'APASS', 'IPHAS', 'IRACgc', 'UCAC4', 'WISE','simbad']
+	all_catalogs = ['simbad', 'AAVSO_VSX', 'TMASS', 'APASS', 'IPHAS', 'IRACgc', 'UCAC4', 'WISE']
 
 
 
 	# define the result table
-	useful_col = ['catname','ra','dec','offset']
+	useful_col = ['catname','ra','dec','offset','otype']
 	all_items_df = pd.DataFrame(columns=useful_col)
 
 	for cat in all_catalogs: # loop through all catalogs
@@ -102,12 +110,14 @@ def cat_search(ra_in, dec_in, srad):
 			if (sb_success == 1) and (len(sb_out) > 0):
 				itemframe = pd.DataFrame(sb_out, columns = sb_cols)
 				itemframe['offset'] = [Angle(float(off) * u.arcsec).arcsec for off in itemframe['offset'].values]
-				itemframe = itemframe[useful_col[1:]].astype('float')
+				itemframe = itemframe[useful_col[1:]]
+				itemframe[useful_col[1:-1]] = itemframe[useful_col[1:-1]].astype('float')
 				itemframe['catname'] = 'simbad'
 				itemframe = itemframe[useful_col]
 				itemframe = itemframe.sort_values('offset', ascending=1).iloc[[0]]
 				all_items_df = pd.concat([all_items_df, itemframe], axis=0)
-				
+				if 'Galaxy' in itemframe.otype.values:
+					break
 		else:
 			# make sure the catalog name is string
 			cat = str(cat)
@@ -135,6 +145,11 @@ def cat_search(ra_in, dec_in, srad):
 				itemframe['offset'] = itemframe['skycoord'].apply(get_center_offset)
 				# sort dataframe by offset
 				itemframe = itemframe.sort_values('offset', ascending=1).iloc[[0]]
+				# define type of the crossmatched object
+				if cat == 'AAVSO_VSX':
+					itemframe['otype'] = 'VS'
+				else:
+					itemframe['otype'] = 'Unknown'
 				# add catalog name
 				itemframe['catname'] = cat
 				# select useful col only
@@ -144,4 +159,7 @@ def cat_search(ra_in, dec_in, srad):
 	if all_items_df.empty:
 		return all_items_df
 	else:
-		return all_items_df.sort_values('offset', ascending=1).iloc[[0]]
+		if all_items_df[all_items_df['catname']=='simbad']['otype'] == 'Galaxy':
+			return all_items_df[all_items_df['catname']=='simbad'].iloc[[0]]
+		else:
+			return all_items_df.sort_values('offset', ascending=1).iloc[[0]]
