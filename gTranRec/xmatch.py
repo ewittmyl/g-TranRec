@@ -168,14 +168,13 @@ def contextual_check(detab, r=10, GTR_thresh=0.85):
     return detab
         
 
-def all_Xmatch(filename, diffphoto, thresh=0.85, catparse=True):
+def all_Xmatch(filename, diffphoto, thresh=0.85):
     # MP check
     diffphoto = mp_check(filename, diffphoto, thresh)
-    if catparse:
-        # load sciphoto from FITS
-        sciphoto = fits2df(filename, 'PHOTOMETRY')
-        diffphoto = contextual_check(diffphoto, GTR_thresh=thresh)
-        diffphoto = galaxy_search(diffphoto, GTR_thresh=thresh)
+    # load sciphoto from FITS
+    sciphoto = fits2df(filename, 'PHOTOMETRY')
+    diffphoto = contextual_check(diffphoto, GTR_thresh=thresh)
+    diffphoto = galaxy_search(diffphoto, GTR_thresh=thresh)
 
     return diffphoto
 

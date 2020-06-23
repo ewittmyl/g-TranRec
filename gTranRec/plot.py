@@ -10,7 +10,7 @@ from fpdf import FPDF
 import os
 from .image_process import fits2df
 
-def generate_report(filename, output=None, thresh=0.85, filtering=True):
+def generate_report(filename, output=None, thresh=0.85, near_galaxy=True, filter_known=True):
         detab = fits2df(filename, 'PHOTOMETRY_DIFF')
         candidates = detab[detab.gtr_cnn>thresh]
         candidates = round(candidates, 5)
@@ -31,8 +31,15 @@ def generate_report(filename, output=None, thresh=0.85, filtering=True):
                 col += ['known_ra','known_dec','known_off']
 
         candidates = candidates[col]
-        if filtering and ('known_off' in candidates.columns):
-                candidates = candidates[(candidates.known_off>5) | np.isnan(candidates.known_off) | candidates[candidates.galaxy_off<30]]
+        if near_galaxy and filter_known:
+                candidates = candidates[((candidates.known_off>5) | np.isnan(candidates.known_off)) & candidates[candidates.galaxy_off<30]]
+        elif near_galaxy and not filter_known:
+                candidates = candidates[candidates[candidates.galaxy_off<30]]
+        elif not near_galaxy and filter_known:
+                candidates = candidates[((candidates.known_off>5) | np.isnan(candidates.known_off))]
+        elif not near_galaxy and not filter_known:
+                continue
+        
         interval = ZScaleInterval()
         j = 0
         stamps_fn = []
