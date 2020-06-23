@@ -9,12 +9,13 @@ import urllib
 import requests	
 from . import config
 
-def simbad_check(ra, dec, srad):
+def simbad_check(ra, dec, srad, galaxy_check=False):
 
 	# We use the Simbad script-interface to make our queries.
 
 	# Simbad script-interface URL:
 	url = "http://simbad.u-strasbg.fr/simbad/sim-script?script="
+
 
 	# Our search-script. This can be modified to produce different outputs.
 	# Current version will produce each entry in the format:
@@ -61,14 +62,28 @@ def simbad_check(ra, dec, srad):
 	df.otype = df.otype.astype('str')
 	df.otype = [d[1:-1] for d in df.otype.values]
 
-	if 'Galaxy' in df.otype.values:
-		# only include galaxy if the crossmatch result contains galaxy
-		df = df[df.otype=='Galaxy'].sort_values('offset', ascending=1)
-		# galaxy flag
-		df.offset = 777
+	galaxy_label = ['Galaxy','Possible_G','Possible_SClG','Possible_ClG','Possible_GrG','SuperClG','ClG','GroupG','Compact_Gr_G','PairG',
+					'IG','PartofG,GinCl','BClG','GinGroup','GinPair','High_z_G','RadioG','HII_G','LSB_G','AGN_Candidate','EmG','StarburstG',
+					'BlueComG','AGN','LINER','Seyfert','Seyfert_1','Seyfert_2','Blazar','QSO']
+
+	if galaxy_check:
+		# boolean filtering for the rows of galaxies
+		galaxy_rows = [1 if v in galaxy_label else 0 for v in df.otype.values]
+		galaxy_rows = list(map(bool,galaxy_rows))
+		# sort by offset
+		df = df[galaxy_rows]
+		if not df.empty:
+			df = df.sort_values('offset', ascending=1)
+
 	else:
-		# perform normal sorting if no galaxy in the crossmatch table
-		df = df.sort_values('offset', ascending=1)
+		# boolean filtering for the rows of galaxies
+		not_galaxy_rows = [0 if v in galaxy_label else 1 for v in df.otype.values]
+		not_galaxy_rows = list(map(bool,not_galaxy_rows))
+		# sort by offset
+		df = df[not_galaxy_rows]
+		if not df.empty:
+			df = df.sort_values('offset', ascending=1)
+
 
 	# redefine colcell and out_table
 	colcell = df.columns
@@ -76,7 +91,7 @@ def simbad_check(ra, dec, srad):
 	# Return output, status flag indicating search success:
 	return colcell, colunits, out_table, True
 
-def cat_search(ra_in, dec_in, srad):
+def cat_search(ra_in, dec_in, srad, galaxy_check=False):
 	ra_in, dec_in = float(ra_in), float(dec_in)
 
 
@@ -96,8 +111,10 @@ def cat_search(ra_in, dec_in, srad):
 
 
 	# all catalogs used to check
-	all_catalogs = ['simbad', 'AAVSO_VSX', 'TMASS', 'APASS', 'IPHAS', 'IRACgc', 'UCAC4', 'WISE']
-
+	# all_catalogs = ['simbad', 'AAVSO_VSX', 'TMASS', 'APASS', 'IPHAS', 'IRACgc', 'UCAC4', 'WISE']
+	all_catalogs = ['simbad','AAVSO_VSX']
+	if galaxy_check:
+		all_catalogs = ['GLADE','simbad']
 
 
 	# define the result table
@@ -106,7 +123,7 @@ def cat_search(ra_in, dec_in, srad):
 
 	for cat in all_catalogs: # loop through all catalogs
 		if cat == 'simbad':
-			sb_cols, sb_units, sb_out, sb_success = simbad_check(ra=position.ra.degree, dec=position.dec.degree, srad=srad.arcsec)
+			sb_cols, sb_units, sb_out, sb_success = simbad_check(ra=position.ra.degree, dec=position.dec.degree, srad=srad.arcsec, galaxy_check=galaxy_check)
 			if (sb_success == 1) and (len(sb_out) > 0):
 				itemframe = pd.DataFrame(sb_out, columns = sb_cols)
 				itemframe['offset'] = [Angle(float(off) * u.arcsec).arcsec for off in itemframe['offset'].values]
@@ -116,8 +133,6 @@ def cat_search(ra_in, dec_in, srad):
 				itemframe = itemframe[useful_col]
 				itemframe = itemframe.sort_values('offset', ascending=1).iloc[[0]]
 				all_items_df = pd.concat([all_items_df, itemframe], axis=0)
-				if 'Galaxy' in itemframe.otype.values:
-					break
 		else:
 			# make sure the catalog name is string
 			cat = str(cat)
@@ -148,6 +163,8 @@ def cat_search(ra_in, dec_in, srad):
 				# define type of the crossmatched object
 				if cat == 'AAVSO_VSX':
 					itemframe['otype'] = 'VS'
+				elif cat == 'GLADE':
+					itemframe['otype'] = 'Galaxy'
 				else:
 					itemframe['otype'] = 'Unknown'
 				# add catalog name
@@ -159,7 +176,4 @@ def cat_search(ra_in, dec_in, srad):
 	if all_items_df.empty:
 		return all_items_df
 	else:
-		if 'Galaxy' in all_items_df[all_items_df['catname']=='simbad']['otype'].values:
-			return all_items_df[all_items_df['catname']=='simbad'].iloc[[0]]
-		else:
-			return all_items_df.sort_values('offset', ascending=1).iloc[[0]]
+		return all_items_df.sort_values('offset', ascending=1).iloc[[0]]

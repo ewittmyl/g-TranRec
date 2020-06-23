@@ -10,7 +10,7 @@ from fpdf import FPDF
 import os
 from .image_process import fits2df
 
-def generate_report(filename, output=None, thresh=0.85, near_galaxy=True, xmatch_filter=True):
+def generate_report(filename, output=None, thresh=0.85, filtering=True):
         detab = fits2df(filename, 'PHOTOMETRY_DIFF')
         candidates = detab[detab.gtr_cnn>thresh]
         candidates = round(candidates, 5)
@@ -25,18 +25,14 @@ def generate_report(filename, output=None, thresh=0.85, near_galaxy=True, xmatch
         if 'mp_offset' in candidates.columns:
                 col += ['mp_offset']
                 candidates = candidates[candidates.mp_offset>5]
-        if 'GLADE_offset' in candidates.columns:
-                col += ['GLADE_offset','GLADE_RA','GLADE_dec']
-        if 'GLADE_dist' in candidates.columns:
-                col += ['GLADE_dist']
+        if 'galaxy_off' in candidates.columns:
+                col += ['galaxy_off','galaxy_ra','galaxy_dec']
         if 'known_ra' in candidates.columns:
                 col += ['known_ra','known_dec','known_off']
 
         candidates = candidates[col]
-        if near_galaxy:
-                candidates = candidates[candidates.GLADE_offset<30]
-        if xmatch_filter and ('known_off' in candidates.columns):
-                candidates = candidates[(candidates.known_off>3) | np.isnan(candidates.known_off)]
+        if filtering and ('known_off' in candidates.columns):
+                candidates = candidates[(candidates.known_off>5) | np.isnan(candidates.known_off) | candidates[candidates.galaxy_off<30]]
         interval = ZScaleInterval()
         j = 0
         stamps_fn = []
@@ -52,8 +48,8 @@ def generate_report(filename, output=None, thresh=0.85, near_galaxy=True, xmatch
                         if i == 0:
                                 ax.set_xticks([0,16.1])
                                 ax.set_xticklabels(['','20"'])
-                                if 'GLADE_offset' in candidates.columns:
-                                        r = candidate[1]['GLADE_offset'] / 1.24
+                                if 'galaxy_off' in candidates.columns:
+                                        r = candidate[1]['galaxy_off'] / 1.24
                                         if r < 75:
                                                 circle = plt.Circle((75, 75), r, color='r', fill=False, linewidth=0.8)
                                                 ax.add_artist(circle)
@@ -78,8 +74,8 @@ def generate_report(filename, output=None, thresh=0.85, near_galaxy=True, xmatch
                                                 plt.title("Magnitude: {}\nMinor Planet: {}''".format(candidate[1]['mag'], candidate[1]['mp_offset']), loc='left', fontsize=10)
 
                         if i == 2:
-                                if 'GLADE_offset' in candidates.columns:
-                                        plt.title("GLADE galaxy\n{}'', {}Mpc\nRA, Dec: {}, {}".format(candidate[1]['GLADE_offset'], candidate[1]['GLADE_dist'], candidate[1]['GLADE_RA'], candidate[1]['GLADE_dec']), loc='left', fontsize=10)          
+                                if 'galaxy_off' in candidates.columns:
+                                        plt.title("Galaxy\n{}''\nRA, Dec: {}, {}".format(candidate[1]['galaxy_off'], candidate[1]['galaxy_ra'], candidate[1]['galaxy_dec']), loc='left', fontsize=10)          
                 image_name = filename.split(".")[0] + '_' + str(j) + '.png'
                 stamps_fn.append(image_name)
                 plt.savefig(image_name, dpi=100, bbox_inches='tight')

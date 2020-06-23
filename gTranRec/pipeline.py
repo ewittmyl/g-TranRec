@@ -24,7 +24,7 @@ def add_score(filename):
 
     return w.diffphoto
 
-def main(science, template=None, thresh=0.85, catparse=True, near_galaxy=False, report=False):
+def main(science, template=None, thresh=0.85, catparse=True, near_galaxy=True, report=False):
     # start timer
     start = time.time()
 
@@ -36,7 +36,6 @@ def main(science, template=None, thresh=0.85, catparse=True, near_galaxy=False, 
         # create glade df for the given image
         glade = GladeDB.image_search(science)
         # add GLADE information to diffphoto
-        diffphoto = XmatchGLADE(diffphoto, glade.copy(), thresh)
         diffphoto = all_Xmatch(science, diffphoto, thresh=thresh, catparse=catparse)
         diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)
 
@@ -56,7 +55,6 @@ def main(science, template=None, thresh=0.85, catparse=True, near_galaxy=False, 
         # create glade df for the given image
         glade = GladeDB.image_search(science)
         # add GLADE information to diffphoto
-        diffphoto = XmatchGLADE(diffphoto, glade.copy(), thresh)
         diffphoto = all_Xmatch(science, diffphoto, thresh=thresh, catparse=catparse)
         diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)
         FitsOp(science, "PHOTOMETRY_DIFF", diffphoto, mode="update")
