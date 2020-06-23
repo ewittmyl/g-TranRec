@@ -44,7 +44,7 @@ def generate_report(filename, output=None, thresh=0.85, near_galaxy=True, filter
         stamps_fn = []
         candidates = candidates.replace(np.nan, "--", regex=True)
         for candidate in candidates.iterrows():
-                fig = plt.figure(figsize=(8,8))
+                fig = plt.figure(figsize=(10,10))
                 for i, img_type in enumerate(['IMAGE','TEMPLATE','DIFFERENCE']):
                         stamp = [Cutout2D(pix_val[i], (float(candidate[1]['X_IMAGE'])-1, float(candidate[1]['Y_IMAGE'])-1), (150, 150),  mode='partial').data.reshape(22500)]
                         stamp = interval(stamp)
