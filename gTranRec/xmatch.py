@@ -11,7 +11,7 @@ from .database import GladeDB
 from .catparser import cat_search
 
 
-def galaxy_search(detab, r=30, GTR_thresh=0.85):
+def galaxy_search(detab, r=60, GTR_thresh=0.85):
     # split detection table into real and bogus subset
     real_df = detab[detab.gtr_cnn > GTR_thresh]
     bogus_df = detab[detab.gtr_cnn < GTR_thresh]

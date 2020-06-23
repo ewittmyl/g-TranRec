@@ -32,9 +32,9 @@ def generate_report(filename, output=None, thresh=0.85, near_galaxy=True, filter
 
         candidates = candidates[col]
         if near_galaxy and filter_known:
-                candidates = candidates[((candidates.known_off>5) | np.isnan(candidates.known_off)) & (candidates.galaxy_off<30)]
+                candidates = candidates[((candidates.known_off>5) | np.isnan(candidates.known_off)) & (candidates.galaxy_off<60)]
         elif near_galaxy and not filter_known:
-                candidates = candidates[candidates.galaxy_off<30]
+                candidates = candidates[candidates.galaxy_off<60]
         elif not near_galaxy and filter_known:
                 candidates = candidates[((candidates.known_off>5) | np.isnan(candidates.known_off))]
 
