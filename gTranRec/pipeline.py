@@ -24,7 +24,7 @@ def add_score(filename):
 
     return w.diffphoto
 
-def main(science, template=None, thresh=0.85, catparse=True, near_galaxy=True, report=False):
+def main(science, template=None, thresh=0.85, catparse=True, filtering=True, report=False):
     # start timer
     start = time.time()
 
@@ -42,7 +42,7 @@ def main(science, template=None, thresh=0.85, catparse=True, near_galaxy=True, r
         FitsOp(science, "PHOTOMETRY_DIFF", diffphoto, mode="update")
 
         if report:
-            generate_report(science, thresh=thresh, near_galaxy=near_galaxy)
+            generate_report(science, thresh=thresh, filtering=filtering)
 
     else:
         unzip(template)
@@ -59,7 +59,7 @@ def main(science, template=None, thresh=0.85, catparse=True, near_galaxy=True, r
         diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)
         FitsOp(science, "PHOTOMETRY_DIFF", diffphoto, mode="update")
         if report:
-            generate_report(science, output='{}_report_sub.pdf'.format(science.split('.')[0]), thresh=thresh, near_galaxy=near_galaxy)
+            generate_report(science, output='{}_report_sub.pdf'.format(science.split('.')[0]), thresh=thresh, filtering=filtering)
 
     end = time.time()
     time_used = end - start
