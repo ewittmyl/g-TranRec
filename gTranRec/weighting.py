@@ -19,7 +19,7 @@ class Weighting():
 
     def calc_weight(self):
         param = {
-            'n_sig': 6, 
+            'n_sig': 100, 
             'ang_sol': 1.24,
         }
         self.calc_sigma()
