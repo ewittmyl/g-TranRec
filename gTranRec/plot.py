@@ -12,15 +12,15 @@ from .image_process import fits2df
 
 def generate_report(filename, output=None, thresh=0.85):
         detab = fits2df(filename, 'PHOTOMETRY_DIFF')
-        candidates = detab[detab.gtr_cnn>thresh]
+        candidates = detab[detab.gtr_wcnn>thresh]
         candidates = round(candidates, 5)
-        candidates = candidates.sort_values(by='wgtr_cnn', ascending=False)
+        candidates = candidates.sort_values(by='gtr_wcnn', ascending=False)
 
         pix_val = []
         pix_val.append(getdata(filename, 'IMAGE'))
         pix_val.append(getdata(filename, 'TEMPLATE'))
         pix_val.append(getdata(filename, 'DIFFERENCE'))
-        col = ['ra','dec','X_IMAGE','Y_IMAGE', 'wgtr_cnn','mag']
+        col = ['ra','dec','X_IMAGE','Y_IMAGE', 'gtr_wcnn','mag']
 
         # if 'mp_offset' in candidates.columns:
         #         col += ['mp_offset']
@@ -70,7 +70,7 @@ def generate_report(filename, output=None, thresh=0.85):
                         ax.axvline(75, ymin=0.55, ymax=0.6,color='red', linewidth=2)
                 
                         if i == 0:
-                                plt.title("{}\nRA: {}\nDec: {}\nScore: {}".format(filename, candidate[1]['ra'], candidate[1]['dec'], candidate[1]['gtr_cnn']), loc='left', fontsize=10)
+                                plt.title("{}\nRA: {}\nDec: {}\nScore: {}".format(filename, candidate[1]['ra'], candidate[1]['dec'], candidate[1]['gtr_wcnn']), loc='left', fontsize=10)
                         if i == 1:
                                 plt.title("Magnitude: {}".format(candidate[1]['mag']), loc='left', fontsize=10)
                                 # if 'mp_offset' in candidates.columns:
