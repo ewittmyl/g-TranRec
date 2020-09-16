@@ -81,7 +81,7 @@ def unzip(filename, verbose=False):
     # run unix command
     os.system(cmd)
 
-def template_align(science, template, , verbose=False):
+def template_align(science, template, verbose=False):
     # display progress if verbose=True
     if verbose:
         print("Aligning {} to match with {}...".format(template, science))
