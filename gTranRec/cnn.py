@@ -1,15 +1,12 @@
 import pkg_resources
 from astropy.io.fits import getdata
 from .image_process import fits2df
-from .data_process import Stamping
+from .features import Stamping
 
 
 class CNN():
-    """
-    CNN model class object.
-    """
     def __init__(self, model):
-        # define CNN model
+        # initialize CNN model
         self.model = model
 
     @classmethod
@@ -23,25 +20,32 @@ class CNN():
         cnn_path = '/'.join([params['datapath'], 'cnn.m'])
         # load model
         model = load_model(cnn_path)
-
+        # load model with class method
         return cls(model)
     
-    def image_predict(self, filename):
+    def image_predict(self, filename, verbose=False):
         parameters = {
             'diffphoto': 'PHOTOMETRY_DIFF',
             'diffimage': 'DIFFERENCE',
         }
-        # load image
+        # load DIFFERENCE image
         self.image_data = getdata(filename, parameters['diffimage'])
-        # load photometry table
+        # load PHOTOMETRY_DIFFERENCE
         self.photo_df = fits2df(filename, parameters['diffphoto'])
-        # get stamps
+        # get stamps from the PHOTOMETRY_DIFFERENCE
         stamps_obj = Stamping.create_stamps(self.image_data, self.photo_df)
+        # clean data
         stamps_obj.clean_stamps()
+        # normalize data
         stamps_obj.norm_stamps()
-        # calculate score
+        # display progress if verbose=True
+        if verbose:
+            print("Making prediction...")
+        # CNN predicts
         self.cnn_score = self.model.predict(stamps_obj.norm_stamps.reshape(-1,21,21,1))
+        # get the score of being real
         self.cnn_score = self.cnn_score[:,1]
+        # add score column to the given pd.DataFrame
         self.photo_df['gtr_cnn'] = self.cnn_score
 
 

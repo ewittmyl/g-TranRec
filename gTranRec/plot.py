@@ -10,33 +10,33 @@ from fpdf import FPDF
 import os
 from .image_process import fits2df
 
-def generate_report(filename, output=None, thresh=0.85, near_galaxy=True, filter_known=True):
+def generate_report(filename, output=None, thresh=0.85):
         detab = fits2df(filename, 'PHOTOMETRY_DIFF')
         candidates = detab[detab.gtr_cnn>thresh]
         candidates = round(candidates, 5)
-        candidates = candidates.sort_values(by='gtr_cnn', ascending=False)
+        candidates = candidates.sort_values(by='wgtr_cnn', ascending=False)
 
         pix_val = []
         pix_val.append(getdata(filename, 'IMAGE'))
         pix_val.append(getdata(filename, 'TEMPLATE'))
         pix_val.append(getdata(filename, 'DIFFERENCE'))
-        col = ['ra','dec','X_IMAGE','Y_IMAGE', 'gtr_cnn','mag']
+        col = ['ra','dec','X_IMAGE','Y_IMAGE', 'wgtr_cnn','mag']
 
-        if 'mp_offset' in candidates.columns:
-                col += ['mp_offset']
-                candidates = candidates[candidates.mp_offset>5]
-        if 'galaxy_off' in candidates.columns:
-                col += ['galaxy_off','galaxy_ra','galaxy_dec']
-        if 'known_ra' in candidates.columns:
-                col += ['known_ra','known_dec','known_off']
+        # if 'mp_offset' in candidates.columns:
+        #         col += ['mp_offset']
+        #         candidates = candidates[candidates.mp_offset>5]
+        # if 'galaxy_off' in candidates.columns:
+        #         col += ['galaxy_off','galaxy_ra','galaxy_dec']
+        # if 'known_ra' in candidates.columns:
+        #         col += ['known_ra','known_dec','known_off']
 
         candidates = candidates[col]
-        if near_galaxy and filter_known:
-                candidates = candidates[((candidates.known_off>5) | np.isnan(candidates.known_off)) & (candidates.galaxy_off<60)]
-        elif near_galaxy and not filter_known:
-                candidates = candidates[candidates.galaxy_off<60]
-        elif not near_galaxy and filter_known:
-                candidates = candidates[((candidates.known_off>5) | np.isnan(candidates.known_off))]
+        # if near_galaxy and filter_known:
+        #         candidates = candidates[((candidates.known_off>5) | np.isnan(candidates.known_off)) & (candidates.galaxy_off<60)]
+        # elif near_galaxy and not filter_known:
+        #         candidates = candidates[candidates.galaxy_off<60]
+        # elif not near_galaxy and filter_known:
+        #         candidates = candidates[((candidates.known_off>5) | np.isnan(candidates.known_off))]
 
         
         interval = ZScaleInterval()
@@ -73,15 +73,15 @@ def generate_report(filename, output=None, thresh=0.85, near_galaxy=True, filter
                                 plt.title("{}\nRA: {}\nDec: {}\nScore: {}".format(filename, candidate[1]['ra'], candidate[1]['dec'], candidate[1]['gtr_cnn']), loc='left', fontsize=10)
                         if i == 1:
                                 plt.title("Magnitude: {}".format(candidate[1]['mag']), loc='left', fontsize=10)
-                                if 'mp_offset' in candidates.columns:
-                                        if 'known_ra' in candidates.columns:
-                                                plt.title("Magnitude: {}\nMinor Planet: {}''\nCat off: {}".format(candidate[1]['mag'], candidate[1]['mp_offset'], candidate[1]['known_off']), loc='left', fontsize=10)
-                                        else:
-                                                plt.title("Magnitude: {}\nMinor Planet: {}''".format(candidate[1]['mag'], candidate[1]['mp_offset']), loc='left', fontsize=10)
+                                # if 'mp_offset' in candidates.columns:
+                                #         if 'known_ra' in candidates.columns:
+                                #                 plt.title("Magnitude: {}\nMinor Planet: {}''\nCat off: {}".format(candidate[1]['mag'], candidate[1]['mp_offset'], candidate[1]['known_off']), loc='left', fontsize=10)
+                                #         else:
+                                #                 plt.title("Magnitude: {}\nMinor Planet: {}''".format(candidate[1]['mag'], candidate[1]['mp_offset']), loc='left', fontsize=10)
 
-                        if i == 2:
-                                if 'galaxy_off' in candidates.columns:
-                                        plt.title("Galaxy\n{}''\nRA, Dec: {}, {}".format(candidate[1]['galaxy_off'], candidate[1]['galaxy_ra'], candidate[1]['galaxy_dec']), loc='left', fontsize=10)          
+                        # if i == 2:
+                        #         if 'galaxy_off' in candidates.columns:
+                        #                 plt.title("Galaxy\n{}''\nRA, Dec: {}, {}".format(candidate[1]['galaxy_off'], candidate[1]['galaxy_ra'], candidate[1]['galaxy_dec']), loc='left', fontsize=10)          
                 image_name = filename.split(".")[0] + '_' + str(j) + '.png'
                 stamps_fn.append(image_name)
                 plt.savefig(image_name, dpi=100, bbox_inches='tight')
