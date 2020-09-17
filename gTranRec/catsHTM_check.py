@@ -224,7 +224,7 @@ def xmatch_check(photometry_df, srad=10, thresh=0.85, conn="gotocompute"):
 	mpc = pympc.Checker()
 	i = 1
 	for r in photometry_df.iterrows():
-		if (r[1].gtr_wcnn > thresh) & not (r[1].known_offset<5):
+		if (r[1].gtr_wcnn > thresh) & not (r[1].known_offset.values<5):
 			c1 = SkyCoord(r[1]['ra']*u.degree, r[1]['dec']*u.degree, frame='icrs')
 			if i % 10:
 				mpc = pympc.Checker()
@@ -235,7 +235,7 @@ def xmatch_check(photometry_df, srad=10, thresh=0.85, conn="gotocompute"):
 				photometry_df.at[r[0], 'mp_offset'] = round(np.min(c1.separation(mp_c).arcsec), 2)
 	i = 1
 	for r in photometry_df.iterrows():
-		if (r[1].gtr_wcnn > thresh) & not (r[1].known_offset<5) & not (r[1]['mp_offset'] < 5):
+		if (r[1].gtr_wcnn > thresh) & not (r[1].known_offset.values<5) & not (r[1]mp_offset.values < 5):
 			c1 = SkyCoord(r[1]['ra']*u.degree, r[1]['dec']*u.degree, frame='icrs')
 			if i % 10:
 				mpc = pympc.Checker()
