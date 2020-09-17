@@ -26,7 +26,7 @@ def add_score(filename):
     # return PHOTOMETRY_DIFFERENCE with CNN score as pd.DataFrame
     return w.diffphoto
 
-def main(science, template=None, thresh=0.85, report=True):
+def main(science, template=None, thresh=0.85, conn="gotocompute", report=True):
     # start timer
     start = time.time()
     # funpack image
@@ -36,7 +36,7 @@ def main(science, template=None, thresh=0.85, report=True):
         # add CNN score onto PHOTOMETRY_DIFFERENCE and return the updated one
         diffphoto = add_score(science)
         
-        ### diffphoto = all_Xmatch(science, diffphoto, thresh=thresh)
+        diffphoto = xmatch_check(diffphoto, conn=conn, thresh=thresh)
 
         # drop all columns with object dtypes
         diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)
@@ -62,7 +62,7 @@ def main(science, template=None, thresh=0.85, report=True):
         # add CNN score onto PHOTOMETRY_DIFFERENCE and return the updated one
         diffphoto = add_score(science)
         
-        ### diffphoto = all_Xmatch(science, diffphoto, thresh=thresh)
+        diffphoto = xmatch_check(diffphoto, conn=conn, thresh=thresh)
 
          # drop all columns with object dtypes
         diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)

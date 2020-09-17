@@ -197,7 +197,7 @@ def xmatch_df(ra_in, dec_in, srad=10, conn="gotocompute", object_type='point'):
         df = cat_search(ra_in, dec_in, srad, conn=conn, galaxy_check=True)
     return df.set_index('catname')
 
-def xmatch_check(photometry_df, srad=10, thresh=0.85):
+def xmatch_check(photometry_df, srad=10, thresh=0.85, conn="gotocompute"):
     ng_col = ['GAIADR2', 'PS1', 'UCAC4',
        'TMASS', 'AAVSO_VSX', 'APASS', 'DECaLS',
        'IPHAS', 'NEDz','simbad'] # cat col
@@ -205,7 +205,7 @@ def xmatch_check(photometry_df, srad=10, thresh=0.85):
     for r in photometry_df.iterrows():
         if r[1].gtr_wcnn > thresh:
             try:
-                xm_df = catchecker.xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=srad, object_type='point')
+                xm_df = catchecker.xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=srad, conn=conn, object_type='point')
                 photometry_df.at[r[0], 'known_offset'] = xm_df.iloc[0]['offset']
             except:    
                 pass
@@ -215,7 +215,7 @@ def xmatch_check(photometry_df, srad=10, thresh=0.85):
     for r in photometry_df.iterrows():
         if r[1].gtr_wcnn > thresh:
             try:
-                xm_df = catchecker.xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=60, object_type='extend')
+                xm_df = catchecker.xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=60, conn=conn, object_type='extend')
                 photometry_df.at[r[0], 'galaxy_offset'] = xm_df.iloc[0]['offset']
             except:    
                 pass
@@ -228,7 +228,7 @@ def xmatch_check(photometry_df, srad=10, thresh=0.85):
             c1 = SkyCoord(r[1]['ra']*u.degree, r[1]['dec']*u.degree, frame='icrs')
             if i % 10:
                 mpc = pympc.Checker()
-            mpc.cone_search(r[1]['ra'], r[1]['dec'],r[1]['obsdate'], 10., online=False)
+            mpc.cone_search(r[1]['ra'], r[1]['dec'],r[1]['obsdate'], srad, online=False)
             i += 1
             if mpc.table.shape[0] > 0:
                 mp_c = SkyCoord(ra=mpc.table['RA_deg']*u.degree, dec=mpc.table['Dec_deg']*u.degree)
@@ -239,7 +239,7 @@ def xmatch_check(photometry_df, srad=10, thresh=0.85):
             c1 = SkyCoord(r[1]['ra']*u.degree, r[1]['dec']*u.degree, frame='icrs')
             if i % 10:
                 mpc = pympc.Checker()
-            mpc.cone_search(r[1]['ra'], r[1]['dec'],r[1]['obsdate'], 10., online=True)
+            mpc.cone_search(r[1]['ra'], r[1]['dec'],r[1]['obsdate'], srad, online=True)
             i += 1
             if mpc.table.shape[0] > 0:
                 mp_c = SkyCoord(ra=mpc.table['RA_deg']*u.degree, dec=mpc.table['Dec_deg']*u.degree)
