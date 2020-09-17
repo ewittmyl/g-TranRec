@@ -21,10 +21,7 @@ def simbad_check(ra, dec, srad, galaxy_check=False):
     # Our search-script. This can be modified to produce different outputs.
 	# Current version will produce each entry in the format:
 	# offset (arcsec) | identifier | objtype | RA (deg) | Dec (deg) | U mag | B mag | V mag | R mag | I mag
-	script = "output console=off script=off\nformat object form1 \"%DIST | %IDLIST(1) | %OTYPE(S) | %COO(:;A;d) " \
-			"| %COO(:;D;d) | %FLUXLIST(U)[%6.2*(F)] | %FLUXLIST(B)[%6.2*(F)] | %FLUXLIST(V)[%6.2*(F)] " \
-			"| %FLUXLIST(R)[%6.2*(F)] | %FLUXLIST(I)[%6.2*(F)]\"\nquery coo "+str(ra)+" "+str(dec)+" "\
-			+"radius="+str(srad)+"s frame=ICRS"
+	script = "output console=off script=off\nformat object form1 \"%DIST | %IDLIST(1) | %OTYPE(S) | %COO(:;A;d) | %COO(:;D;d) | %FLUXLIST(U)[%6.2*(F)] | %FLUXLIST(B)[%6.2*(F)] | %FLUXLIST(V)[%6.2*(F)] | %FLUXLIST(R)[%6.2*(F)] | %FLUXLIST(I)[%6.2*(F)]\"\nquery coo "+' '.join([str(ra), str(dec)])+" radius="+str(srad)+"s frame=ICRS"
 
     # Encode the script as URL and build the full search URL-string:
 	enc_script = urllib.parse.quote(script)
