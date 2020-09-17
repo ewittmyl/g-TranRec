@@ -7,6 +7,7 @@ from .cnn import CNN
 from .weighting import Weighting
 import os
 from .catsHTM_check import xmatch_check
+from astropy.io.fits import getheader
 
 def add_score(filename):
     param = {
@@ -27,6 +28,8 @@ def add_score(filename):
     return w.diffphoto
 
 def main(science, template=None, thresh=0.85, conn="gotocompute", report=True):
+    sci_hdr = getheader(science, 'IMAGE')
+    obsdate = str(sci_hdr['DATE-OBS']).split(".")[0]
     # start timer
     start = time.time()
     # funpack image
@@ -36,7 +39,7 @@ def main(science, template=None, thresh=0.85, conn="gotocompute", report=True):
         # add CNN score onto PHOTOMETRY_DIFFERENCE and return the updated one
         diffphoto = add_score(science)
         
-        diffphoto = xmatch_check(diffphoto, conn=conn, thresh=thresh)
+        diffphoto = xmatch_check(diffphoto, obsdate=obsdate, conn=conn, thresh=thresh)
 
         # drop all columns with object dtypes
         diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)
@@ -62,7 +65,7 @@ def main(science, template=None, thresh=0.85, conn="gotocompute", report=True):
         # add CNN score onto PHOTOMETRY_DIFFERENCE and return the updated one
         diffphoto = add_score(science)
         
-        diffphoto = xmatch_check(diffphoto, conn=conn, thresh=thresh)
+        diffphoto = xmatch_check(diffphoto, obsdate=obsdate, conn=conn, thresh=thresh)
 
          # drop all columns with object dtypes
         diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)
