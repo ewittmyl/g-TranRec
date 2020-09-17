@@ -225,24 +225,24 @@ def xmatch_check(photometry_df, srad=10, thresh=0.85, conn="gotocompute"):
 	i = 1
 	for r in photometry_df.iterrows():
 		if (r[1].gtr_wcnn > thresh) & ( (r[1].known_offset>5) | np.isnan(r[1].known_offset) ):
-			c1 = SkyCoord(r[1]['ra']*u.degree, r[1]['dec']*u.degree, frame='icrs')
+			c1 = skycoord(r[1]['ra']*u.degree, r[1]['dec']*u.degree, frame='icrs')
 			if i % 10:
 				mpc = pympc.Checker()
 			mpc.cone_search(r[1]['ra'], r[1]['dec'],r[1]['obsdate'], srad, online=False)
 			i += 1
 			if mpc.table.shape[0] > 0:
-				mp_c = SkyCoord(ra=mpc.table['RA_deg']*u.degree, dec=mpc.table['Dec_deg']*u.degree)
+				mp_c = skycoord(ra=mpc.table['RA_deg']*u.degree, dec=mpc.table['Dec_deg']*u.degree)
 				photometry_df.at[r[0], 'mp_offset'] = round(np.min(c1.separation(mp_c).arcsec), 2)
 	i = 1
 	for r in photometry_df.iterrows():
 		if (r[1].gtr_wcnn > thresh) & ( (r[1].known_offset.values>5) | np.isnan(r[1].known_offset.values) ) & ( (r[1].mp_offset.values>5) | np.isnan(r[1].mp_offset.values) ):
-			c1 = SkyCoord(r[1]['ra']*u.degree, r[1]['dec']*u.degree, frame='icrs')
+			c1 = skycoord(r[1]['ra']*u.degree, r[1]['dec']*u.degree, frame='icrs')
 			if i % 10:
 				mpc = pympc.Checker()
 			mpc.cone_search(r[1]['ra'], r[1]['dec'],r[1]['obsdate'], srad, online=True)
 			i += 1
 			if mpc.table.shape[0] > 0:
-				mp_c = SkyCoord(ra=mpc.table['RA_deg']*u.degree, dec=mpc.table['Dec_deg']*u.degree)
+				mp_c = skycoord(ra=mpc.table['RA_deg']*u.degree, dec=mpc.table['Dec_deg']*u.degree)
 				photometry_df.at[r[0], 'mp_offset'] = round(np.min(c1.separation(mp_c).arcsec), 2)
 
 	return photometry_df
