@@ -15,4 +15,7 @@ pca_path = os.path.join(DATA_DIR, 'pca.m')
 rf_path = os.path.join(DATA_DIR, 'rf.m')
 glade_path = os.path.join(DATA_DIR, 'GLADE.txt')
 
-catsHTM_rootpath = str("/export/gotodata2/catalogs/")
+catsHTM_rootpath = {
+    'gotocompute':str("/export/gotodata2/catalogs/"),
+    'goto2':str("/mnt4/data/ewittmyl/catalogs/")
+}
