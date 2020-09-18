@@ -12,6 +12,7 @@ from .image_process import fits2df
 
 def generate_report(filename, output=None, thresh=0.85):
         detab = fits2df(filename, 'PHOTOMETRY_DIFF')
+        photo_sci = fits2df(filename, "PHOTOMETRY")
         # select detections with score > thresh
         candidates = detab[detab.gtr_wcnn>thresh]
         # round off the data values for cleaner display
