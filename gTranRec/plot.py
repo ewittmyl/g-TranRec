@@ -29,7 +29,7 @@ def generate_report(filename, output=None, thresh=0.85):
         candidates = candidates[candidates.s2n > 3]
         # filter out abnormal mag
         hdr = getheader(filename, "IMAGE")
-        limmag = header['CALLIM5']
+        limmag = hdr['CALLIM5']
         candidates = candidates[candidates.mag < limmag]
         candidates = candidates[candidates.mag > 14]
        
