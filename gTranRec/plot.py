@@ -41,9 +41,9 @@ def generate_report(filename, output=None, thresh=0.85):
         col = ['ra','dec','X_IMAGE','Y_IMAGE', 'gtr_wcnn','mag','galaxy_offset','known_offset','mp_offset']
 
         candidates = candidates[col]
-         # filter known source and keep sources next to galaxy
-        known_g_filter = (((candidates.known_offset > 5) | (np.isnan(candidates.known_offset))) | (candidates.galaxy_offset<60)) & ((candidates.mp_offset > 5) | (np.isnan(candidates.mp_offset))) 
-        candidates = candidates[known_g_filter]
+        # filter known source and keep sources next to galaxy
+        # known_g_filter = (((candidates.known_offset > 5) | (np.isnan(candidates.known_offset))) | (candidates.galaxy_offset<60)) & ((candidates.mp_offset > 5) | (np.isnan(candidates.mp_offset))) 
+        # candidates = candidates[known_g_filter]
        
         
         interval = ZScaleInterval()
@@ -77,9 +77,9 @@ def generate_report(filename, output=None, thresh=0.85):
                         ax.axvline(75, ymin=0.55, ymax=0.6,color='red', linewidth=2)
                 
                         if i == 0:
-                                plt.title("{}\nRA: {}\nDec: {}\n Magnitude: {}\n Score: {}".format(filename, candidate[1]['ra'], candidate[1]['dec'], candidate[1]['mag'], candidate[1]['gtr_wcnn']), loc='left', fontsize=10)
+                                plt.title("{}\nRA: {}\nDec: {}\nMagnitude: {}\nScore: {}".format(filename, candidate[1]['ra'], candidate[1]['dec'], candidate[1]['mag'], candidate[1]['gtr_wcnn']), loc='left', fontsize=10)
                         if i == 1:
-                                plt.title("Known Off: {}\n Galaxy Off: {}\n MP Off: {}".format(candidate[1]['known_offset'], candidate[1]['galaxy_offset'], candidate[1]['mp_offset']), loc='left', fontsize=10)    
+                                plt.title("Known Off: {}\nGalaxy Off: {}\nMP Off: {}".format(candidate[1]['known_offset'], candidate[1]['galaxy_offset'], candidate[1]['mp_offset']), loc='left', fontsize=10)    
                 image_name = filename.split(".")[0] + '_' + str(j) + '.png'
                 stamps_fn.append(image_name)
                 plt.savefig(image_name, dpi=100, bbox_inches='tight')
