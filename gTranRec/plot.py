@@ -69,7 +69,7 @@ def generate_report(filename, output=None, thresh=0.85):
                                 ax.set_xticks([0,16.1])
                                 ax.set_xticklabels(['','20"'])
                                 if 'galaxy_offset' in candidates.columns:
-                                        r = candidate[1]['galaxy_offset'] / 1.24
+                                        r = float(candidate[1]['galaxy_offset']) / 1.24
                                         if r < 75:
                                                 circle = plt.Circle((75, 75), r, color='r', fill=False, linewidth=0.8)
                                                 ax.add_artist(circle)
