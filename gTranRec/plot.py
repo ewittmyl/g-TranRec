@@ -38,20 +38,13 @@ def generate_report(filename, output=None, thresh=0.85):
         pix_val.append(getdata(filename, 'IMAGE'))
         pix_val.append(getdata(filename, 'TEMPLATE'))
         pix_val.append(getdata(filename, 'DIFFERENCE'))
-        col = ['ra','dec','X_IMAGE','Y_IMAGE', 'gtr_wcnn','mag','galaxy_offset','known_offset']
-
-        if 'mp_offset' in candidates.columns:
-                col += ['mp_offset']
+        col = ['ra','dec','X_IMAGE','Y_IMAGE', 'gtr_wcnn','mag','galaxy_offset','known_offset','mp_offset']
 
         candidates = candidates[col]
          # filter known source and keep sources next to galaxy
-        if 'mp_offset' in candidates.columns:
-                known_g_filter = ((candidates.known_offset > 5) | (np.isnan(candidates.known_offset))) | (candidates.galaxy_offset<60) & ((candidates.mp_offset > 5) & (np.isnan(candidates.mp_offset))) 
-                candidates = candidates[known_g_filter]
-        else:
-                known_g_filter = ((candidates.known_offset > 5) | (np.isnan(candidates.known_offset))) | (candidates.galaxy_offset<60)
-                candidates = candidates[known_g_filter]
-
+        known_g_filter = ((candidates.known_offset > 5) | (np.isnan(candidates.known_offset))) | (candidates.galaxy_offset<60) & ((candidates.mp_offset > 5) | (np.isnan(candidates.mp_offset))) 
+        candidates = candidates[known_g_filter]
+       
         
         interval = ZScaleInterval()
         j = 0
@@ -68,7 +61,7 @@ def generate_report(filename, output=None, thresh=0.85):
                         if i == 0:
                                 ax.set_xticks([0,16.1])
                                 ax.set_xticklabels(['','20"'])
-                                if ('galaxy_offset' in candidates.columns) & (candidate[1]['galaxy_offset'] != "--"):
+                                if ('galaxy_offset' in candidates.columns) & (candidate[1]['galaxy_offset'] != '--'):
                                         r = float(candidate[1]['galaxy_offset']) / 1.24
                                         if r < 75:
                                                 circle = plt.Circle((75, 75), r, color='r', fill=False, linewidth=0.8)
@@ -86,10 +79,7 @@ def generate_report(filename, output=None, thresh=0.85):
                         if i == 0:
                                 plt.title("{}\nRA: {}\nDec: {}\n Magnitude: {}\n Score: {}".format(filename, candidate[1]['ra'], candidate[1]['dec'], candidate[1]['mag'], candidate[1]['gtr_wcnn']), loc='left', fontsize=10)
                         if i == 1:
-                                plt.title("Known Off: {}\n Galaxy Off:".format(candidate[1]['known_offset'], candidate[1]['galaxy_offset']), loc='left', fontsize=10)
-                        if i == 2:
-                                if 'mp_offset' in candidates.columns:
-                                        plt.title("MP Off: {}".format(candidate[1]['mp_offset']), loc='left', fontsize=10)          
+                                plt.title("Known Off: {}\n Galaxy Off: {}\n MP Off: {}".format(candidate[1]['known_offset'], candidate[1]['galaxy_offset'], candidate[1]['mp_offset']), loc='left', fontsize=10)    
                 image_name = filename.split(".")[0] + '_' + str(j) + '.png'
                 stamps_fn.append(image_name)
                 plt.savefig(image_name, dpi=100, bbox_inches='tight')
