@@ -32,7 +32,13 @@ def generate_report(filename, output=None, thresh=0.85):
         limmag = hdr['CALLIM5']
         candidates = candidates[candidates.mag < limmag]
         candidates = candidates[candidates.mag > 14]
-       
+        # filter known source and keep sources next to galaxy
+        mp_filter = candidates.mp_offset < 10
+        candidates = candidates[~mp_filter]
+        known_filter = candidates.known_offset < 5
+        galaxy_filter  = candidates.galaxy_offset < 60
+        candidates = candidates[(~known_filter) | (galaxy_filter)]
+      
 
         pix_val = []
         pix_val.append(getdata(filename, 'IMAGE'))
@@ -41,9 +47,6 @@ def generate_report(filename, output=None, thresh=0.85):
         col = ['ra','dec','X_IMAGE','Y_IMAGE', 'gtr_wcnn','mag','galaxy_offset','known_offset','mp_offset']
 
         candidates = candidates[col]
-        # filter known source and keep sources next to galaxy
-        # known_g_filter = (((candidates.known_offset > 5) | (np.isnan(candidates.known_offset))) | (candidates.galaxy_offset<60)) & ((candidates.mp_offset > 5) | (np.isnan(candidates.mp_offset))) 
-        # candidates = candidates[known_g_filter]
        
         
         interval = ZScaleInterval()
