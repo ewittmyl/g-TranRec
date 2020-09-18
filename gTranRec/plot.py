@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 import pandas as pd
 from astropy.table import Table
-from astropy.io.fits import getdata
+from astropy.io.fits import getdata, getheader
 from astropy.nddata import Cutout2D
 from astropy.visualization import ZScaleInterval
 from fpdf import FPDF
@@ -12,31 +12,44 @@ from .image_process import fits2df
 
 def generate_report(filename, output=None, thresh=0.85):
         detab = fits2df(filename, 'PHOTOMETRY_DIFF')
+        # select detections with score > thresh
         candidates = detab[detab.gtr_wcnn>thresh]
+        # round off the data values for cleaner display
         candidates = round(candidates, 5)
+        # sort table by score
         candidates = candidates.sort_values(by='gtr_wcnn', ascending=False)
+        # filter out edge detections
+        edge_filter = (candidates.X_IMAGE > 50) & (candidates.Y_IMAGE > 50) & (candidates.X_IMAGE < 8126) & (candidates.Y_IMAGE < 6082)
+        candidates = candidates[edge_filter]
+        # filter out too large FWHM
+        fwhm_cutoff = photo_sci.FWHM_IMAGE.quantile(0.95)
+        candidates = candidates[candidates.FWHM_IMAGE < fwhm_cutoff]
+        # filter out too low S2N
+        candidates = candidates[candidates.s2n > 3]
+        # filter out abnormal mag
+        hdr = getheader(filename, "IMAGE")
+        limmag = header['CALLIM5']
+        candidates = candidates[candidates.mag < limmag]
+        candidates = candidates[candidates.mag > 14]
+       
 
         pix_val = []
         pix_val.append(getdata(filename, 'IMAGE'))
         pix_val.append(getdata(filename, 'TEMPLATE'))
         pix_val.append(getdata(filename, 'DIFFERENCE'))
-        col = ['ra','dec','X_IMAGE','Y_IMAGE', 'gtr_wcnn','mag']
+        col = ['ra','dec','X_IMAGE','Y_IMAGE', 'gtr_wcnn','mag','galaxy_offset','known_offset']
 
-        # if 'mp_offset' in candidates.columns:
-        #         col += ['mp_offset']
-        #         candidates = candidates[candidates.mp_offset>5]
-        # if 'galaxy_off' in candidates.columns:
-        #         col += ['galaxy_off','galaxy_ra','galaxy_dec']
-        # if 'known_ra' in candidates.columns:
-        #         col += ['known_ra','known_dec','known_off']
+        if 'mp_offset' in candidates.columns:
+                col += ['mp_offset']
 
         candidates = candidates[col]
-        # if near_galaxy and filter_known:
-        #         candidates = candidates[((candidates.known_off>5) | np.isnan(candidates.known_off)) & (candidates.galaxy_off<60)]
-        # elif near_galaxy and not filter_known:
-        #         candidates = candidates[candidates.galaxy_off<60]
-        # elif not near_galaxy and filter_known:
-        #         candidates = candidates[((candidates.known_off>5) | np.isnan(candidates.known_off))]
+         # filter known source and keep sources next to galaxy
+        if 'mp_offset' in candidates.columns:
+                known_g_filter = ((candidate.known_offset > 5) | (np.isnan(candidate.known_offset))) | (candidate.galaxy_offset<60) & ((candidate.mp_offset > 5) | (np.isnan(candidate.mp_offset))) 
+                candidates = candidates[known_g_filter]
+        else:
+                known_g_filter = ((candidate.known_offset > 5) | (np.isnan(candidate.known_offset))) | (candidate.galaxy_offset<60)
+                candidates = candidates[known_g_filter]
 
         
         interval = ZScaleInterval()
@@ -54,8 +67,8 @@ def generate_report(filename, output=None, thresh=0.85):
                         if i == 0:
                                 ax.set_xticks([0,16.1])
                                 ax.set_xticklabels(['','20"'])
-                                if 'galaxy_off' in candidates.columns:
-                                        r = candidate[1]['galaxy_off'] / 1.24
+                                if 'galaxy_offset' in candidates.columns:
+                                        r = candidate[1]['galaxy_offset'] / 1.24
                                         if r < 75:
                                                 circle = plt.Circle((75, 75), r, color='r', fill=False, linewidth=0.8)
                                                 ax.add_artist(circle)
@@ -70,18 +83,12 @@ def generate_report(filename, output=None, thresh=0.85):
                         ax.axvline(75, ymin=0.55, ymax=0.6,color='red', linewidth=2)
                 
                         if i == 0:
-                                plt.title("{}\nRA: {}\nDec: {}\nScore: {}".format(filename, candidate[1]['ra'], candidate[1]['dec'], candidate[1]['gtr_wcnn']), loc='left', fontsize=10)
+                                plt.title("{}\nRA: {}\nDec: {}\n Magnitude: {}\n Score: {}".format(filename, candidate[1]['ra'], candidate[1]['dec'], candidate[1]['mag'], candidate[1]['gtr_wcnn']), loc='left', fontsize=10)
                         if i == 1:
-                                plt.title("Magnitude: {}".format(candidate[1]['mag']), loc='left', fontsize=10)
-                                # if 'mp_offset' in candidates.columns:
-                                #         if 'known_ra' in candidates.columns:
-                                #                 plt.title("Magnitude: {}\nMinor Planet: {}''\nCat off: {}".format(candidate[1]['mag'], candidate[1]['mp_offset'], candidate[1]['known_off']), loc='left', fontsize=10)
-                                #         else:
-                                #                 plt.title("Magnitude: {}\nMinor Planet: {}''".format(candidate[1]['mag'], candidate[1]['mp_offset']), loc='left', fontsize=10)
-
-                        # if i == 2:
-                        #         if 'galaxy_off' in candidates.columns:
-                        #                 plt.title("Galaxy\n{}''\nRA, Dec: {}, {}".format(candidate[1]['galaxy_off'], candidate[1]['galaxy_ra'], candidate[1]['galaxy_dec']), loc='left', fontsize=10)          
+                                plt.title("Known Off: {}\n Galaxy Off:".format(candidate[1]['known_offset'], candidate[1]['galaxy_offset']), loc='left', fontsize=10)
+                        if i == 2:
+                                if 'mp_offset' in candidates.columns:
+                                        plt.title("MP Off: {}".format(candidate[1]['mp_offset']), loc='left', fontsize=10)          
                 image_name = filename.split(".")[0] + '_' + str(j) + '.png'
                 stamps_fn.append(image_name)
                 plt.savefig(image_name, dpi=100, bbox_inches='tight')
