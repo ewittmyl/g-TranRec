@@ -42,7 +42,7 @@ def generate_report(filename, output=None, thresh=0.85):
 
         candidates = candidates[col]
          # filter known source and keep sources next to galaxy
-        known_g_filter = ((candidates.known_offset > 5) | (np.isnan(candidates.known_offset))) | (candidates.galaxy_offset<60) & ((candidates.mp_offset > 5) | (np.isnan(candidates.mp_offset))) 
+        known_g_filter = (((candidates.known_offset > 5) | (np.isnan(candidates.known_offset))) | (candidates.galaxy_offset<60)) & ((candidates.mp_offset > 5) | (np.isnan(candidates.mp_offset))) 
         candidates = candidates[known_g_filter]
        
         
