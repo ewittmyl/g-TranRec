@@ -24,7 +24,7 @@ def add_score(filename):
     w.calc_weight()
     # calculate the weighted CNN score
     gtr_wcnn = w.diffphoto['weight'] * w.diffphoto['gtr_cnn']
-    w.diffphoto['gtr_wcnn'] = round(gtr_wcnn, 5)
+    w.diffphoto['gtr_wcnn'] = gtr_wcnn
     # return PHOTOMETRY_DIFFERENCE with CNN score as pd.DataFrame
     return w.diffphoto
 

@@ -47,7 +47,7 @@ class CNN():
         # get the score of being real
         self.cnn_score = self.cnn_score[:,1]
         # add score column to the given pd.DataFrame
-        self.photo_df['gtr_cnn'] = round(self.cnn_score, 5)
+        self.photo_df['gtr_cnn'] = self.cnn_score
         print("Done!")  
 
 

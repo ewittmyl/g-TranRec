@@ -40,6 +40,5 @@ class Weighting():
 
         # calculate weight
         weight = np.exp(-(offset/(param['n_sig']*med_fwhm)))
-        self.diffphoto['weight'] = round(weight, 5)
-        weight
+        self.diffphoto['weight'] = weight
         print('Done!')
