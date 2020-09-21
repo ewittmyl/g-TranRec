@@ -25,8 +25,6 @@ def generate_report(filename, output=None, thresh=0.85):
         # filter out too large FWHM
         fwhm_cutoff = photo_sci.FWHM_IMAGE.quantile(0.95)
         candidates = candidates[candidates.FWHM_IMAGE < fwhm_cutoff]
-        # filter out too low S2N
-        candidates = candidates[candidates.s2n > 3]
         # filter out abnormal mag
         hdr = getheader(filename, "IMAGE")
         limmag = hdr['CALLIM5']
