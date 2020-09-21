@@ -41,8 +41,7 @@ def main(science, template=None, thresh=0.85, conn="gotocompute", report=True):
         
         diffphoto = xmatch_check(diffphoto, obsdate=obsdate, conn=conn, thresh=thresh)
 
-        # drop all columns with object dtypes
-        diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)
+
         # update the new PHOTOMETRY_DIFFERENCE
         FitsOp(science, "PHOTOMETRY_DIFF", diffphoto, mode="update")
         # generate report PDF if report=True
@@ -67,8 +66,6 @@ def main(science, template=None, thresh=0.85, conn="gotocompute", report=True):
         
         diffphoto = xmatch_check(diffphoto, obsdate=obsdate, conn=conn, thresh=thresh)
 
-         # drop all columns with object dtypes
-        diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)
         # update the new PHOTOMETRY_DIFFERENCE
         FitsOp(science, "PHOTOMETRY_DIFF", diffphoto, mode="update")
         # generate report PDF if report=True
