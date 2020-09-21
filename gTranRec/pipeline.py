@@ -44,6 +44,9 @@ def main(science, template=None, thresh=0.85, conn="gotocompute", report=True):
 
 
         # update the new PHOTOMETRY_DIFFERENCE
+        print(diffphoto)
+        print(diffphoto.columns)
+        print(diffphoto.values)
         diffphoto = diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)
         FitsOp(science, "PHOTOMETRY_DIFF", diffphoto, mode="update")
         # generate report PDF if report=True
