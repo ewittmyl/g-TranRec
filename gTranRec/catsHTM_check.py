@@ -203,32 +203,31 @@ def xmatch_check(photometry_df, obsdate, srad=10, thresh=0.85, conn="gotocompute
 	   'TMASS', 'AAVSO_VSX', 'APASS', 'DECaLS',
 	   'IPHAS', 'NEDz','simbad'] # cat col
 	photometry_df['known_offset'] = np.nan
-	for r in photometry_df.iterrows():
-		if r[1].gtr_wcnn > thresh:
-			try:
-				xm_df = catchecker.xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=srad, conn=conn, object_type='point')
-				photometry_df.at[r[0], 'known_offset'] = xm_df.iloc[0]['offset']
-			except:    
-				pass
+	photometry_df['galaxy_offset'] = np.nan
+	photometry_df['mp_offset'] = np.nan
+	cand_df = photometry_df[photometry_df.gtr_wcnn > thresh].reset_index().drop("index",axis=1)
+	bogus_df = photometry_df[photometry_df.gtr_wcnn < thresh].reset_index().drop("index",axis=1)
+	for r in cand_df.iterrows():
+		print('Cross-matching...{}/{}'.format(r[0], cand_df.shape[0]))
+		try:
+			xm_df = catchecker.xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=srad, conn=conn, object_type='point')
+			cand_df.at[r[0], 'known_offset'] = xm_df.iloc[0]['offset']
+		except:    
+			pass
 
 	g_col = ['simbad', 'GLADE', 'TMASSxsc','GALEX']
-	photometry_df['galaxy_offset'] = np.nan
-	for r in photometry_df.iterrows():
-		print('Cross-matching...{}/{}'.format(r[0], photometry_df.shape[0]))
-		i += 1
-		if r[1].gtr_wcnn > thresh:
-			try:
-				xm_df = catchecker.xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=60, conn=conn, object_type='extend')
-				photometry_df.at[r[0], 'galaxy_offset'] = xm_df.iloc[0]['offset']
-			except:    
-				pass
+	for r in cand_df.iterrows():
+		print('Cross-matching...{}/{}'.format(r[0], cand_df.shape[0]))
+		try:
+			xm_df = catchecker.xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=60, conn=conn, object_type='extend')
+			cand_df.at[r[0], 'galaxy_offset'] = xm_df.iloc[0]['offset']
+		except:    
+			pass
 
-	photometry_df['mp_offset'] = np.nan
 	mpc = pympc.Checker()
 	i = 1
-	for r in photometry_df.iterrows():
-		print('Cross-matching...{}/{}'.format(r[0], photometry_df.shape[0]))
-		if (r[1].gtr_wcnn > thresh) & ( (r[1].known_offset>5) | np.isnan(r[1].known_offset) ):
+	for r in cand_df.iterrows():
+		if (r[1].known_offset>5) | np.isnan(r[1].known_offset):
 			c1 = skycoord(r[1]['ra']*u.degree, r[1]['dec']*u.degree, frame='icrs')
 			if i % 10:
 				mpc = pympc.Checker()
@@ -236,7 +235,7 @@ def xmatch_check(photometry_df, obsdate, srad=10, thresh=0.85, conn="gotocompute
 			i += 1
 			if mpc.table.shape[0] > 0:
 				mp_c = skycoord(ra=mpc.table['RA_deg']*u.degree, dec=mpc.table['Dec_deg']*u.degree)
-				photometry_df.at[r[0], 'mp_offset'] = round(np.min(c1.separation(mp_c).arcsec), 2)
+				cand_df.at[r[0], 'mp_offset'] = round(np.min(c1.separation(mp_c).arcsec), 2)
 	# i = 1
 	# for r in photometry_df.iterrows():
 	# 	if (r[1].gtr_wcnn > thresh) & ( (r[1].known_offset>5) | np.isnan(r[1].known_offset) ) & ( (r[1].mp_offset>5) | np.isnan(r[1].mp_offset) ):
@@ -248,5 +247,5 @@ def xmatch_check(photometry_df, obsdate, srad=10, thresh=0.85, conn="gotocompute
 	# 		if mpc.table.shape[0] > 0:
 	# 			mp_c = skycoord(ra=mpc.table['RA_deg']*u.degree, dec=mpc.table['Dec_deg']*u.degree)
 	# 			photometry_df.at[r[0], 'mp_offset'] = round(np.min(c1.separation(mp_c).arcsec), 2)
-
+	photometry_df = cand_df.merge(bogus_df).reset_index().drop("index",axis=1)
 	return photometry_df
