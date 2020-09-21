@@ -5,12 +5,11 @@ import pandas as pd
 import alipy, os
 from astropy.table import Table
 
-def FitsOp(filename, extname, dataframe, mode='append', verbose=False): 
+def FitsOp(filename, extname, dataframe, mode='append'): 
     # append extra extension table into FITS if mode=append
     if mode == 'append': 
         # display progress if verbose=True
-        if verbose:
-            print("Adding new extension table {} into {}...".format(extname, filename))
+        print("Adding new extension table {} into {}...".format(extname, filename))
         # convert pd.DataFrame to astropy table
         m = Table(dataframe.values, names=dataframe.columns)
         # create header unit
@@ -26,8 +25,7 @@ def FitsOp(filename, extname, dataframe, mode='append', verbose=False):
     # create new FITS if mode=write
     elif mode == 'write':
         # display progress if verbose=True
-        if verbose:
-            print("Creating new FITS {}...".format(filename))
+        print("Creating new FITS {}...".format(filename))
         # convert pd.DataFrame to astropy table
         astropy_tab = Table.from_pandas(dataframe)
         # create new FITS
@@ -41,31 +39,31 @@ def FitsOp(filename, extname, dataframe, mode='append', verbose=False):
     # update particular extension table if mode=update
     elif mode == 'update':
         # display progress if verbose=True
-        if verbose:
-            print("Updating {}[{}]...".format(filename, extname))
+        print("Updating {}[{}]...".format(filename, extname))
         # convert pd.DataFrame to astropy table
         m = Table(dataframe.values, names=dataframe.columns)
         # read header for the extention table
         hdr = getheader(filename, extname=extname)
         # update the extention table 
         update(filename, np.array(m), extname=extname, header=hdr)
+    print("Done!")
 
-def fits2df(filename, extname, verbose=False):
+
+def fits2df(filename, extname):
     # display progress if verbose=True
-    if verbose:
-        print("Reading {} in {}...".format(extname, filename))
+    print("Reading {} in {}...".format(extname, filename))
     # get data from the extention table in the FITS
     df = getdata(filename, extname)
     # convert the table to pd.DataFrame
     df = pd.DataFrame(np.array(df).byteswap().newbyteorder())
     # return extension table in pd.DataFrame
+    print("Done!")
     return df
 
 
-def unzip(filename, verbose=False):
+def unzip(filename):
     # display progress if verbose=True
-    if verbose:
-        print('Funpacking {}...'.format(filename))
+    print('Funpacking {}...'.format(filename))
     # rename file with suffix '.fz'
     output = ''.join([filename, '.fz'])
     # create unix command (rename)
@@ -80,11 +78,12 @@ def unzip(filename, verbose=False):
     cmd = ' '.join(['rm', '-rf', output])
     # run unix command
     os.system(cmd)
+    print("Done!")
 
-def template_align(science, template, verbose=False):
+
+def template_align(science, template):
     # display progress if verbose=True
-    if verbose:
-        print("Aligning {} to match with {}...".format(template, science))
+    print("Aligning {} to match with {}...".format(template, science))
     # list of the images needed to be aligned
     ali_img_list = [template]
     # try hdu=0
@@ -92,61 +91,55 @@ def template_align(science, template, verbose=False):
         # define hdu=0
         hdu = 0
         # identify field stars to xmatch
-        identifications = alipy.ident.run(science, ali_img_list, hdu=hdu, visu=False, verbose=False)
+        identifications = alipy.ident.run(science, ali_img_list, hdu=hdu, visu=False)
         # list of the same length as ali_img_list
         for id in identifications:
             if id.ok == True: # i.e., if it worked
                 # display progress if verbose=True
-                if verbose:
-                    print("%20s : %20s, flux ratio %.2f" % (id.ukn.name, id.trans, id.medfluxratio))
+                print("%20s : %20s, flux ratio %.2f" % (id.ukn.name, id.trans, id.medfluxratio))
 
             else:
                 # display progress if verbose=True
-                if verbose:
-                    print("%20s : no transformation found !" % (id.ukn.name))
+                print("%20s : no transformation found !" % (id.ukn.name))
         # define the shape of the aligned image
         outputshape = alipy.align.shape(science, hdu=hdu)
         # creating the aligned image
         output = '_'.join(['aligned', template])
         # perform alignment
         alipy.align.affineremap(template, id.trans,  
-                                outputshape, hdu=0, alifilepath=output, verbose=False)
+                                outputshape, hdu=0, alifilepath=output)
     # try hdu=1 if hdu=0 create error
     except:
         # define hdu=1
         hdu = 1
         # identify field stars to xmatch
-        identifications = alipy.ident.run(science, ali_img_list, hdu=hdu, visu=False, verbose=False)
+        identifications = alipy.ident.run(science, ali_img_list, hdu=hdu, visu=False)
         # list of the same length as ali_img_list
         for id in identifications:
             if id.ok == True: # i.e., if it worked
                 # display progress if verbose=True
-                if verbose:
-                    print("%20s : %20s, flux ratio %.2f" % (id.ukn.name, id.trans, id.medfluxratio))
+                print("%20s : %20s, flux ratio %.2f" % (id.ukn.name, id.trans, id.medfluxratio))
             else:
                 # display progress if verbose=True
-                if verbose:
-                    print("%20s : no transformation found !" % (id.ukn.name))
+                print("%20s : no transformation found !" % (id.ukn.name))
         # define the shape of the aligned image
         outputshape = alipy.align.shape(science, hdu=hdu)
         # creating the aligned image
         output = '_'.join(['aligned', template])
         # perform alignment
         alipy.align.affineremap(template, id.trans,  
-                                outputshape, hdu=0, alifilepath=output, verbose=False)
+                                outputshape, hdu=0, alifilepath=output)
     # display progress if verbose=True
-    if verbose:
-        print("Image Alignment completed. {} is created.".format(output))
-        print("Copying science image to a new FITS...")
+    print("Image Alignment completed. {} is created.".format(output))
+    print("Copying science image to a new FITS...")
     # rename SCIECNE image
     os.system("mv {} {}.copy".format(science, science))
     # extract IMAGE from the FITS
-    image_extract('.'.join([science, 'copy']), output=science, extname='IMAGE', verbose=verbose)
+    image_extract('.'.join([science, 'copy']), output=science, extname='IMAGE')
     # remove the backup SCIENCE image
     os.system("rm -rf {}.copy".format(science))
     # display progress if verbose=True
-    if verbose:
-        print("Appending TEMPLATE into {}...".format(science))
+    print("Appending TEMPLATE into {}...".format(science))
     # open FITS
     with fits.open(science, mode='update') as hdul0:
         # open aligned image
@@ -158,13 +151,13 @@ def template_align(science, template, verbose=False):
         hdul0[-1].header['EXTNAME'] = 'TEMPLATE'
         hdul0.flush()
     # return the filename of the aligned template
+    print("Done!")
     return output
 
 
-def image_subtract(science, aligned_template, verbose=False):
+def image_subtract(science, aligned_template):
     # display progress if verbose=True
-    if verbose:
-        print("Running {} - {}".format(science, aligned_template))
+    print("Running {} - {}".format(science, aligned_template))
     # define output name of the difference image
     output = '_'.join(['diff', science])
     # try to perform image subtraction
@@ -177,8 +170,7 @@ def image_subtract(science, aligned_template, verbose=False):
         # return error if no hotpants is found
         raise FileNotFoundError('Error occurs when running HOTPANTS!') 
     # display progress if if verbose=True
-    if verbose:
-        print("Appending DIFFERENCE into {}...".format(science))
+    print("Appending DIFFERENCE into {}...".format(science))
     # open FITS
     with fits.open(science, mode='update') as hdul0:
         # open subtracted image
@@ -194,13 +186,14 @@ def image_subtract(science, aligned_template, verbose=False):
     os.system("rm -rf {}".format(aligned_template))
     os.system("rm -rf {}".format(output))
     os.system("rm -rf alipy_out")
+    print("Done!")
 
 
 
-def image_extract(filename, output=None, extname='IMAGE', verbose=False):
+
+def image_extract(filename, output=None, extname='IMAGE'):
     # display progress if verbose=True
-    if verbose:
-        print("Extracting '{}' from {}...".format(extname, filename))
+    print("Extracting '{}' from {}...".format(extname, filename))
     # read the given image
     data = getdata(filename, extname)
     # read the header of the given image
@@ -213,3 +206,4 @@ def image_extract(filename, output=None, extname='IMAGE', verbose=False):
     if not output:
         output = '_'.join([filename.split(".")[0], extname+'.fits'])
     hdu.writeto(output, clobber=True)
+    print("Done!")

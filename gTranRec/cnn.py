@@ -19,11 +19,13 @@ class CNN():
         # define model path
         cnn_path = '/'.join([params['datapath'], 'cnn.m'])
         # load model
+        print("Loading CNN...")
         model = load_model(cnn_path)
         # load model with class method
+        print("Done!")  
         return cls(model)
     
-    def image_predict(self, filename, verbose=False):
+    def image_predict(self, filename):
         parameters = {
             'diffphoto': 'PHOTOMETRY_DIFF',
             'diffimage': 'DIFFERENCE',
@@ -39,14 +41,15 @@ class CNN():
         # normalize data
         stamps_obj.norm_stamps()
         # display progress if verbose=True
-        if verbose:
-            print("Making prediction...")
+        print("Making prediction...")
         # CNN predicts
         self.cnn_score = self.model.predict(stamps_obj.norm_stamps.reshape(-1,21,21,1))
         # get the score of being real
         self.cnn_score = self.cnn_score[:,1]
         # add score column to the given pd.DataFrame
         self.photo_df['gtr_cnn'] = self.cnn_score
+        print("Done!")  
+
 
 
 

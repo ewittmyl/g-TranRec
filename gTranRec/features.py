@@ -11,6 +11,7 @@ class Stamping():
         print("Obtaining thumbnail arrays...")
         stamps_arr = np.array([Cutout2D(image, (photo_df.iloc[i]['x']-1, photo_df.iloc[i]['y']-1), 
                                 (21, 21), mode='partial').data.reshape((21, 21)) for i in np.arange(photo_df.shape[0])])
+        print("Done!")
         return cls(stamps_arr)
 
     def clean_stamps(self):
@@ -25,6 +26,8 @@ class Stamping():
         inds = np.where(np.isnan(self.clean_stamps))
         # replace all NaN by the detection median
         self.clean_stamps[inds] = np.take(row_median, inds[0])
+        print("Done!")
+
 
     def norm_stamps(self):
         print("Normalizing thumbnails...")
@@ -38,3 +41,4 @@ class Stamping():
         self.norm_stamps = np.nan_to_num(self.norm_stamps, nan=1e-5)
 
         self.norm_stamps = self.norm_stamps.reshape(-1, 21, 21)
+        print("Done!")

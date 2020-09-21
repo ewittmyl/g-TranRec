@@ -112,6 +112,7 @@ def cat_search(ra_in, dec_in, srad, conn="gotocompute",galaxy_check=False):
 	all_items_df = pd.DataFrame(columns=useful_col)
 	# loop through all catalogs
 	for cat in all_catalogs:
+		print("\r Cross-matching with {}".format(cat), end="\r")
 		if cat == 'simbad':
 			sb_cols, sb_units, sb_out, sb_success = simbad_check(ra=position.ra.degree, dec=position.dec.degree, srad=srad.arcsec, galaxy_check=galaxy_check)
 			if (sb_success == 1) and (len(sb_out) > 0):
@@ -182,7 +183,7 @@ def cat_search(ra_in, dec_in, srad, conn="gotocompute",galaxy_check=False):
 					# select useful col only
 					itemframe = itemframe[useful_col]
 					all_items_df = pd.concat([all_items_df, itemframe], axis=0)
-
+	print("Done!")
 	if all_items_df.empty:
 		return all_items_df
 	else:
