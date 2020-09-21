@@ -23,7 +23,8 @@ def add_score(filename):
     w = Weighting(sciphoto, c.photo_df)
     w.calc_weight()
     # calculate the weighted CNN score
-    w.diffphoto['gtr_wcnn'] = w.diffphoto['weight'] * w.diffphoto['gtr_cnn']
+    gtr_wcnn = w.diffphoto['weight'] * w.diffphoto['gtr_cnn']
+    w.diffphoto['gtr_wcnn'] = round(gtr_wcnn, 5)
     # return PHOTOMETRY_DIFFERENCE with CNN score as pd.DataFrame
     return w.diffphoto
 
@@ -44,7 +45,6 @@ def main(science, template=None, thresh=0.85, conn="gotocompute", report=True):
 
         # update the new PHOTOMETRY_DIFFERENCE
         diffphoto = diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)
-        diffphoto = round(diffphoto, 5)
         FitsOp(science, "PHOTOMETRY_DIFF", diffphoto, mode="update")
         # generate report PDF if report=True
         if report:
@@ -70,7 +70,6 @@ def main(science, template=None, thresh=0.85, conn="gotocompute", report=True):
 
         # update the new PHOTOMETRY_DIFFERENCE
         diffphoto = diffphoto.drop(columns=diffphoto.columns[diffphoto.dtypes=='object'], inplace=True)
-        diffphoto = round(diffphoto, 5)
         FitsOp(science, "PHOTOMETRY_DIFF", diffphoto, mode="update")
         # generate report PDF if report=True
         if report:
