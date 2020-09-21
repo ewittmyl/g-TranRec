@@ -23,6 +23,7 @@ class Weighting():
             'ang_sol': 1.24,
         }
         self.calc_sigma()
+        print("Calculating offset between SCIENCE and DIFFERENCE..")
         # get all detection coordinates for both science and difference photometry tables
         diff_det_coor = SkyCoord(ra=(self.diffphoto['ra'].values*u.degree), dec=(self.diffphoto['dec'].values*u.degree))
         sci_det_coor = SkyCoord(ra=(self.sciphoto['ra'].values*u.degree), dec=(self.sciphoto['dec'].values*u.degree))
@@ -40,3 +41,4 @@ class Weighting():
         # calculate weight
         weight = np.exp(-(offset/(param['n_sig']*med_fwhm)))
         self.diffphoto['weight'] = weight
+        print('Done!')
