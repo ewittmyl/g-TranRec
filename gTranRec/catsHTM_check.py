@@ -209,7 +209,7 @@ def xmatch_check(photometry_df, obsdate, srad=10, thresh=0.85, conn="gotocompute
 	for r in cand_df.iterrows():
 		print('Known Source Cross-matching...{}/{}'.format(r[0], cand_df.shape[0]))
 		# try:
-		xm_df = catchecker.xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=srad, conn=conn, object_type='point')
+		xm_df = xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=srad, conn=conn, object_type='point')
 		cand_df.at[r[0], 'known_offset'] = xm_df.iloc[0]['offset']
 		# except:    
 		# 	pass
@@ -219,7 +219,7 @@ def xmatch_check(photometry_df, obsdate, srad=10, thresh=0.85, conn="gotocompute
 	for r in cand_df.iterrows():
 		print('Galaxy Cross-matching...{}/{}'.format(r[0], cand_df.shape[0]))
 		try:
-			xm_df = catchecker.xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=60, conn=conn, object_type='extend')
+			xm_df = xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=60, conn=conn, object_type='extend')
 			cand_df.at[r[0], 'galaxy_offset'] = xm_df.iloc[0]['offset']
 		except:    
 			pass
