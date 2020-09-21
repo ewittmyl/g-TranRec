@@ -214,6 +214,8 @@ def xmatch_check(photometry_df, obsdate, srad=10, thresh=0.85, conn="gotocompute
 	g_col = ['simbad', 'GLADE', 'TMASSxsc','GALEX']
 	photometry_df['galaxy_offset'] = np.nan
 	for r in photometry_df.iterrows():
+		print('Cross-matching...{}/{}'.format(r[0], photometry_df.shape[0]))
+		i += 1
 		if r[1].gtr_wcnn > thresh:
 			try:
 				xm_df = catchecker.xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=60, conn=conn, object_type='extend')
@@ -225,6 +227,7 @@ def xmatch_check(photometry_df, obsdate, srad=10, thresh=0.85, conn="gotocompute
 	mpc = pympc.Checker()
 	i = 1
 	for r in photometry_df.iterrows():
+		print('Cross-matching...{}/{}'.format(r[0], photometry_df.shape[0]))
 		if (r[1].gtr_wcnn > thresh) & ( (r[1].known_offset>5) | np.isnan(r[1].known_offset) ):
 			c1 = skycoord(r[1]['ra']*u.degree, r[1]['dec']*u.degree, frame='icrs')
 			if i % 10:
