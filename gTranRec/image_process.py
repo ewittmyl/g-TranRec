@@ -6,8 +6,6 @@ import alipy, os
 from astropy.table import Table
 
 def FitsOp(filename, extname, dataframe, mode='append'): 
-    dataframe = dataframe.drop(columns=dataframe.columns[dataframe.dtypes=='object'], inplace=True)
-    dataframe = round(dataframe, 5)
     # append extra extension table into FITS if mode=append
     if mode == 'append': 
         # display progress if verbose=True
