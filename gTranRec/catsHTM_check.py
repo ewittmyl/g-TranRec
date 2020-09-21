@@ -208,11 +208,11 @@ def xmatch_check(photometry_df, obsdate, srad=10, thresh=0.85, conn="gotocompute
 	bogus_df = photometry_df[photometry_df.gtr_wcnn < thresh].reset_index().drop("index",axis=1)
 	for r in cand_df.iterrows():
 		print('Known Source Cross-matching...{}/{}'.format(r[0], cand_df.shape[0]))
-		# try:
-		xm_df = xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=srad, conn=conn, object_type='point')
-		cand_df.at[r[0], 'known_offset'] = xm_df.iloc[0]['offset']
-		# except:    
-		# 	pass
+		try:
+			xm_df = xmatch_df(float(r[1]['ra']), float(r[1]['dec']), srad=srad, conn=conn, object_type='point')
+			cand_df.at[r[0], 'known_offset'] = xm_df.iloc[0]['offset']
+		except:    
+			pass
 	print("Done!")
 
 	g_col = ['simbad', 'GLADE', 'TMASSxsc','GALEX']
