@@ -40,7 +40,7 @@ def main(science, template=None, thresh=0.85, conn="gotocompute", report=True):
         # add CNN score onto PHOTOMETRY_DIFFERENCE and return the updated one
         diffphoto = add_score(science)
         
-        # diffphoto = xmatch_check(diffphoto, obsdate=obsdate, conn=conn, thresh=thresh)
+        diffphoto = xmatch_check(diffphoto, obsdate=obsdate, conn=conn, thresh=thresh)
 
 
         # update the new PHOTOMETRY_DIFFERENCE
@@ -66,7 +66,7 @@ def main(science, template=None, thresh=0.85, conn="gotocompute", report=True):
         # add CNN score onto PHOTOMETRY_DIFFERENCE and return the updated one
         diffphoto = add_score(science)
         
-        # diffphoto = xmatch_check(diffphoto, obsdate=obsdate, conn=conn, thresh=thresh)
+        diffphoto = xmatch_check(diffphoto, obsdate=obsdate, conn=conn, thresh=thresh)
 
         # update the new PHOTOMETRY_DIFFERENCE
         FitsOp(science, "PHOTOMETRY_DIFF", diffphoto, mode="update")
