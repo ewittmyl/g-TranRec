@@ -42,7 +42,7 @@ def generate_report(filename, output=None, thresh=0.85):
         pix_val.append(getdata(filename, 'IMAGE'))
         pix_val.append(getdata(filename, 'TEMPLATE'))
         pix_val.append(getdata(filename, 'DIFFERENCE'))
-        col = ['ra','dec','X_IMAGE','Y_IMAGE', 'gtr_wcnn','mag','galaxy_offset','known_offset','mp_offset']
+        col = ['ra','dec','X_IMAGE','Y_IMAGE', 'gtr_wcnn','mag']#,'galaxy_offset','known_offset','mp_offset']
 
         candidates = candidates[col]
        
