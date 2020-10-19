@@ -31,8 +31,8 @@ def generate_report(filename, output=None, thresh=0.85):
         candidates = candidates[candidates.mag < limmag]
         candidates = candidates[candidates.mag > 14]
         # filter known source and keep sources next to galaxy
-        mp_filter = candidates.mp_offset < 8
-        candidates = candidates[~mp_filter]
+        # mp_filter = candidates.mp_offset < 8
+        # candidates = candidates[~mp_filter]
         # known_filter = candidates.known_offset < 5
         # galaxy_filter  = candidates.galaxy_offset < 60
         # candidates = candidates[(~known_filter) | (galaxy_filter)]
