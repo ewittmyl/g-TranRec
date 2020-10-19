@@ -31,11 +31,11 @@ def generate_report(filename, output=None, thresh=0.85):
         candidates = candidates[candidates.mag < limmag]
         candidates = candidates[candidates.mag > 14]
         # filter known source and keep sources next to galaxy
-        mp_filter = candidates.mp_offset < 10
+        mp_filter = candidates.mp_offset < 8
         candidates = candidates[~mp_filter]
-        known_filter = candidates.known_offset < 5
-        galaxy_filter  = candidates.galaxy_offset < 60
-        candidates = candidates[(~known_filter) | (galaxy_filter)]
+        # known_filter = candidates.known_offset < 5
+        # galaxy_filter  = candidates.galaxy_offset < 60
+        # candidates = candidates[(~known_filter) | (galaxy_filter)]
       
 
         pix_val = []
@@ -79,8 +79,8 @@ def generate_report(filename, output=None, thresh=0.85):
                 
                         if i == 0:
                                 plt.title("{}\nRA: {}\nDec: {}\nMagnitude: {}\nScore: {}".format(filename, candidate[1]['ra'], candidate[1]['dec'], candidate[1]['mag'], candidate[1]['gtr_wcnn']), loc='left', fontsize=10)
-                        if i == 1:
-                                plt.title("Known Off: {}\nGalaxy Off: {}\nMP Off: {}".format(candidate[1]['known_offset'], candidate[1]['galaxy_offset'], candidate[1]['mp_offset']), loc='left', fontsize=10)    
+                        # if i == 1:
+                        #         plt.title("Known Off: {}\nGalaxy Off: {}\nMP Off: {}".format(candidate[1]['known_offset'], candidate[1]['galaxy_offset'], candidate[1]['mp_offset']), loc='left', fontsize=10)    
                 image_name = filename.split(".")[0] + '_' + str(j) + '.png'
                 stamps_fn.append(image_name)
                 plt.savefig(image_name, dpi=100, bbox_inches='tight')
