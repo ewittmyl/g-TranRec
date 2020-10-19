@@ -62,11 +62,12 @@ def generate_report(filename, output=None, thresh=0.85):
                         if i == 0:
                                 ax.set_xticks([0,16.1])
                                 ax.set_xticklabels(['','20"'])
-                                if ('galaxy_offset' in candidates.columns) & (candidate[1]['galaxy_offset'] != '--'):
-                                        r = float(candidate[1]['galaxy_offset']) / 1.24
-                                        if r < 75:
-                                                circle = plt.Circle((75, 75), r, color='r', fill=False, linewidth=0.8)
-                                                ax.add_artist(circle)
+                                if ('galaxy_offset' in candidates.columns):
+                                        if (candidate[1]['galaxy_offset'] != '--'):
+                                                r = float(candidate[1]['galaxy_offset']) / 1.24
+                                                if r < 75:
+                                                        circle = plt.Circle((75, 75), r, color='r', fill=False, linewidth=0.8)
+                                                        ax.add_artist(circle)
                         else:
                                 ax.set_xticks([])
                                 ax.set_xticklabels([])
